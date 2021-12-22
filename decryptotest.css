@@ -1,0 +1,94 @@
+/* P H A S E 1 */
+.teams {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+.team {
+    border: 1px solid black;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.team-switcher {
+    border: 1px solid black;
+}
+
+.team-member {
+    border: 1px solid blue;
+    margin: 10px;
+}
+
+/* P H A S E 2 */
+
+.playertablecard {
+    display: inline-block;
+    position: relative;
+    margin-top: 5px;
+    width: 72px;
+    height: 96px;
+    background-image: url('img/cards.jpg'); /* temp hack to see it */
+}
+
+.words-panel {
+    width: 1136px; /* 1420px; */
+    height: 400px; /* 500px; */
+
+    background-color: black;
+    background-image: url('img/assets/words-panel.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.words {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    position: relative;
+    top: 70px;
+    left: 115px;
+    height: 100px;
+    width: 900px;
+}
+
+.word {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+
+    width: 160px;
+    color: #cc0000;
+    font-size: 20pt;
+    font-weight: bold;
+}
+
+.tokens {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+}
+
+.token {
+    border: 1px solid black;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background-size: contain;
+    background-repeat: no-repeat;
+    margin: 5px;
+}
+
+.token-success {
+    background-image: url('img/assets/token-success.png');
+    background-color: #ffffff;
+}
+
+.token-fail {
+    background-image: url('img/assets/token-fail.png');
+    background-color: #333333;
+    background-position-y: 20px;
+}
