@@ -90,13 +90,43 @@ define(
 
                 switch ( stateName ) {
                     case 'teamSetup':
-                        dojo.style('phase1', 'display', 'flex');
-                        dojo.style('phase2', 'display', 'none');
+                        dojo.style('teamSetupUi', 'display', 'flex');
+                        dojo.style('electEncryptorUi', 'display', 'none');
+                        dojo.style('giveHintsUi', 'display', 'none');
+                        dojo.style('guessHintsUi', 'display', 'none');
 
-                        this.addActionButton('Switch', _("SwitchTeam"), 'onSwitchTeamClick');
-                        this.addActionButton('Ready', _("Ready"), 'onClickCompleteTeamSetupButton');
+                        this.addActionButton('switchBtn', _("SwitchTeam"), 'onSwitchTeamClick');
+                        this.addActionButton('readyBtn', _("Ready"), 'onClickCompleteTeamSetupButton');
+                        break;
+
+                    case 'electEncryptor':
+                        dojo.style('teamSetupUi', 'display', 'none');
+                        dojo.style('electEncryptorUi', 'display', 'flex');
+                        dojo.style('giveHintsUi', 'display', 'none');
+                        dojo.style('guessHintsUi', 'display', 'none');
+
+                        this.addActionButton('switchBtn', _("SwitchTeam"), 'onSwitchTeamClick');
+                        this.addActionButton('readyBtn', _("Ready"), 'onClickCompleteTeamSetupButton');
+                        break;
+
+                    case 'giveHints':
+                        dojo.style('teamSetupUi', 'display', 'none');
+                        dojo.style('electEncryptorUi', 'display', 'none');
+                        dojo.style('giveHintsUi', 'display', 'flex');
+                        dojo.style('guessHintsUi', 'display', 'none');
+
+                        this.addActionButton('giveHintsBtn', _("Give hints"), 'onGiveHintsClick');
+                        break;
+
+                    case 'guessHints':
+                        dojo.style('teamSetupUi', 'display', 'none');
+                        dojo.style('electEncryptorUi', 'display', 'none');
+                        dojo.style('giveHintsUi', 'display', 'none');
+                        dojo.style('guessHintsUi', 'display', 'flex');
+
                         break;
                     default:
+                        console.error(`state [${stateName}] is not managed`)
                 }
             },
 
@@ -149,35 +179,35 @@ define(
 
             onClickCompleteTeamSetupButton: function () {
                 console.log('onClickCompleteTeamSetupButton');
-                if (this.checkAction('completeTeamSetup', true)) {
-                    this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/completeTeamSetup.html", {
-                        lock : true
-                    }, this, function (result) {
-                    }, function (is_error) {
-                    });
+                if (!this.checkAction('completeTeamSetup', true)) {
+                    return;
                 }
+                this.doAction("completeTeamSetup", {});
             },
+
             subscribeChangeTeamNameClick: function (teamId) {
                 const fn = this.onChangeTeamNameClick.bind(this);
                 return function () {
                     fn(teamId);
                 };
             },
+
             onChangeTeamNameClick: function (teamId) {
                 console.log('onChangeTeamNameClick', teamId);
+                if (!this.checkAction('changeTeamName', true)) {
+                    return;
+                }
+
                 const textboxId = `teamName${teamId}`;
                 const teamNameTextbox = document.getElementById(textboxId);
                 if (teamNameTextbox) {
                     const teamName = teamNameTextbox.value;
                     teamNameTextbox.value = '';
-                    if (this.checkAction('completeTeamSetup', true)) {
-                        this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/changeTeamName.html", {
-                            teamId : teamId,
-                            name: teamName
-                        }, this, function (result) {
-                        }, function (is_error) {
-                        });
-                    }
+
+                    this.doAction("changeTeamName", {
+                        teamId : teamId,
+                        name: teamName
+                    });
                 } else {
                     throw `textbox with id [${textboxId}] not found`;
                 }
@@ -185,18 +215,38 @@ define(
 
             onSwitchTeamClick: function () {
                 console.log('onSwitchTeamClick');
-                if (this.checkAction('completeTeamSetup', true)) {
-                    this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/switchTeam.html", {
-                        lock : true
-                    }, this, function (result) {
-                    }, function (is_error) {
-                    });
+                if (!this.checkAction('switchTeam', true)) {
+                    return;
                 }
+                this.doAction("switchTeam", {});
+            },
+
+            onGiveHintsClick: function() {
+                console.log('onGiveHintsClick');
+                if (!this.checkAction('giveHints', true)) {
+                    return;
+                }
+                const inputs = document.querySelectorAll(".hint input");
+                console.log(inputs);
+                let hints = [];
+                for (const input of inputs) {
+                    hints.push({ id: input.id, value: input.value });
+                }
+                const payload = {hints: JSON.stringify(hints)};
+                console.log({payload});
+                this.doAction("giveHints", payload);
             },
 
             ///////////////////////////////////////////////////
             //// Utility methods
 
+            doAction(actionName, payLoad) {
+                this.ajaxcall(`/${this.game_name}/${this.game_name}/${actionName}.html`, payLoad,
+                    this,
+                    function (result) {},
+                    function (is_error) {}
+                );
+            },
             /*
 
             Here, you can defines some utility methods that you can use everywhere in your javascript

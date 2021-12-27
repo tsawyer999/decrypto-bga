@@ -58,6 +58,16 @@ class action_decryptotest extends APP_GameAction
         $this->game->switchTeam();
         self::ajaxResponse();
     }
+
+    public function giveHints()
+    {
+        self::setAjaxMode();
+//        $hints = self::getArg( "hints", AT_json, true );
+        $hints = "";
+        $this->game->giveHints($hints);
+        self::ajaxResponse();
+    }
+
     /*
 
     Example:

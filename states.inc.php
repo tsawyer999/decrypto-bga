@@ -13,16 +13,31 @@ $machinestates = array(
         "descriptionmyturn" => clienttranslate('${you} must choose a team!'),
         "type" => "multipleactiveplayer",
         "possibleactions" => array( "changeTeamName", "completeTeamSetup", "switchTeam" ),
-        "transitions" => array( "newRound" => 30 )
+        "transitions" => array( "electEncryptor" => 30 )
     ),
     30 => array(
-        "name" => "newRound",
-        "description" => clienttranslate('${actplayer} must guess for team1'),
-        "descriptionmyturn" => clienttranslate('${you} must guess for team1!'),
+        "name" => "electEncryptor",
+        "description" => "",
+        "type" => "game",
+        "action" => "stElectEncryptor",
+        "transitions" => array( "giveHints" => 40 )
+    ),
+    40 => array(
+        "name" => "giveHints",
+        "description" => clienttranslate('${actplayer} must supply hints'),
+        "descriptionmyturn" => clienttranslate('${you} must supply hints'),
         "type" => "activeplayer",
-        "possibleactions" => array( "guess" ),
-        "action" => "stNewRound",
-        "transitions" => array( "playCard" => 20, "pass" => 20 )
+        "possibleactions" => array( "giveHints" ),
+        "transitions" => array( "guessHints" => 50 )
+    ),
+    50 => array(
+        "name" => "guessHints",
+        "description" => clienttranslate('${actplayer} must guess hints'),
+        "descriptionmyturn" => clienttranslate('${you} must guess hints!'),
+        "type" => "multipleactiveplayer",
+        "possibleactions" => array( "guessHints" ),
+        "action" => "stGuessHints",
+        "transitions" => array( "electEncryptor" => 30, "gameEnd" => 99 )
     ),
     99 => array(
         "name" => "gameEnd",

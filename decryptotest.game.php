@@ -171,7 +171,7 @@ class DecryptoTest extends Table
     function completeTeamSetup()
     {
         $playerId = $this->getCurrentPlayerId();
-        $this->gamestate->setPlayerNonMultiactive($playerId, 'newRound');
+        $this->gamestate->setPlayerNonMultiactive($playerId, 'electEncryptor');
     }
 
     function switchTeam()
@@ -193,6 +193,12 @@ class DecryptoTest extends Table
             'playerName' => $playerName,
             'teamId' => $teamId
         ));
+    }
+
+    function giveHints($hints)
+    {
+        $this->gamestate->setAllPlayersMultiactive();
+        $this->gamestate->nextState( "guessHints" );
     }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -244,9 +250,17 @@ class DecryptoTest extends Table
     }
     */
 
-    function stNewRound()
+    function stElectEncryptor()
     {
-        $this->gamestate->setAllPlayersMultiactive();
+        $players = self::loadPlayersBasicInfos();
+        $playerId = key($players);
+        $this->gamestate->changeActivePlayer($playerId);
+        $this->gamestate->nextState( 'giveHints' );
+    }
+
+    function stGuessHints()
+    {
+//        $this->gamestate->setAllPlayersMultiactive();
     }
 
 //////////////////////////////////////////////////////////////////////////////

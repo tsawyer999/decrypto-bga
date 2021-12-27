@@ -1,4 +1,4 @@
-/* P H A S E 1 */
+/* teamSetup */
 .teams {
     width: 100%;
     display: flex;
@@ -22,7 +22,21 @@
     margin: 10px;
 }
 
-/* P H A S E 2 */
+/* giveHints */
+.giveHintsUi {
+    border: 1px solid black;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.hint label {
+    font-size: 50px
+}
+
+.hint input {
+    font-size: 50px
+}
 
 .playertablecard {
     display: inline-block;
