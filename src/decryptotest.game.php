@@ -1,6 +1,7 @@
 <?php
 
 require_once(APP_GAMEMODULE_PATH.'module/table/table.game.php');
+require_once('modules/team.php');
 
 class DecryptoTest extends Table
 {
@@ -97,12 +98,17 @@ class DecryptoTest extends Table
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
         $current_player_id = self::getCurrentPlayerId();    // !! We must only return informations visible by this player !!
 
-        $sql = "SELECT team.team_id id, team.team_name name, GROUP_CONCAT(player.player_id) as members "
+        $sql = "SELECT "
+            . "team.team_id id, "
+            . "team.team_name name, "
+            . "GROUP_CONCAT(player.player_id) as members "
             . "FROM team "
             . "LEFT JOIN player "
             . "ON player.player_team_id = team.team_id "
             . "GROUP BY team.team_id";
         $result['teams'] = self::getCollectionFromDb($sql);
+
+        $team = new Team();
 
         return $result;
     }

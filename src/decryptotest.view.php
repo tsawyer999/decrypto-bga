@@ -1,6 +1,6 @@
 <?php
 require_once( APP_BASE_PATH."view/common/game.view.php" );
-require_once("models.php");
+require_once("modules/dictionary-random-picker.php");
 require_once("words.php");
 
 class view_decryptotest_decryptotest extends game_view
