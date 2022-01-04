@@ -1,7 +1,7 @@
 <?php
 
 require_once(APP_GAMEMODULE_PATH.'module/table/table.game.php');
-require_once('modules/team.php');
+require_once('models/team.php');
 
 class DecryptoTest extends Table
 {
