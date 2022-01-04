@@ -1,10 +1,13 @@
 <?php
 
 require_once(APP_GAMEMODULE_PATH.'module/table/table.game.php');
-require_once('models/team.php');
+require_once('models/team.model.php');
+require_once('repositories/team.repository.php');
 
 class DecryptoTest extends Table
 {
+    private $teamRepository;
+
     function __construct()
     {
         // Your global variables labels:
@@ -14,6 +17,8 @@ class DecryptoTest extends Table
         //  the corresponding ID in gameoptions.inc.php.
         // Note: afterwards, you can get/set the global variables with getGameStateValue/setGameStateInitialValue/setGameStateValue
         parent::__construct();
+
+        $this->teamRepository = new TeamRepository($this);
 
         self::initGameStateLabels(array(
             //    "my_first_global_variable" => 10,
@@ -98,17 +103,8 @@ class DecryptoTest extends Table
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
         $current_player_id = self::getCurrentPlayerId();    // !! We must only return informations visible by this player !!
 
-        $sql = "SELECT "
-            . "team.team_id id, "
-            . "team.team_name name, "
-            . "GROUP_CONCAT(player.player_id) as members "
-            . "FROM team "
-            . "LEFT JOIN player "
-            . "ON player.player_team_id = team.team_id "
-            . "GROUP BY team.team_id";
-        $result['teams'] = self::getCollectionFromDb($sql);
-
-        $team = new Team();
+        $teams = $this->teamRepository->getTeams();
+        $result['teams'] = $teams;
 
         return $result;
     }
@@ -146,7 +142,10 @@ class DecryptoTest extends Table
         In this space, you can put any utility methods useful for your game logic
     */
 
-
+    function getCollectionFromDb2($sql)
+    {
+        return self::getCollectionFromDb($sql);
+    }
 
 //////////////////////////////////////////////////////////////////////////////
 //////////// Player actions
