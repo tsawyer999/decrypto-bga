@@ -138,13 +138,16 @@ class DecryptoTest extends Table
 //////////// Utility functions
 ////////////
 
-    /*
-        In this space, you can put any utility methods useful for your game logic
-    */
-
-    function getCollectionFromDb2($sql)
-    {
+    function getCollectionFromDb2($sql) {
         return self::getCollectionFromDb($sql);
+    }
+
+    function dbQuery2($sql) {
+        return self::DbQuery($sql);
+    }
+
+    function getUniqueValueFromDb2($sql) {
+        return self::getUniqueValueFromDB($sql);
     }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -156,42 +159,26 @@ class DecryptoTest extends Table
         (note: each method below must match an input method in decryptotest.action.php)
     */
 
-    function changeTeamName($teamId, $teamName)
-    {
-        $sql = "UPDATE team SET team_name='$teamName' WHERE team_id='$teamId'" ;
-        self::DbQuery( $sql );
-
-        $playerId = $this->getCurrentPlayerId();
-        $players = self::loadPlayersBasicInfos();
-        $playerName = $players[$playerId]['player_name'];
+    function changeTeamName($teamId, $teamName) {
+        $this->teamRepository->changeTeamName($teamId, $teamName);
+        $playerName = $this->getCurrentPlayerName();
 
         self::notifyAllPlayers('changeTeamName', "$playerName change team $teamId name to $teamName", array(
             'teamId' => $teamId,
-            'teamName' => $teamName,
-            'playerId' => $playerId,
-            'playerName' => $playerName
+            'teamName' => $teamName
         ));
     }
 
-    function completeTeamSetup()
-    {
+    function completeTeamSetup() {
         $playerId = $this->getCurrentPlayerId();
         $this->gamestate->setPlayerNonMultiactive($playerId, 'electEncryptor');
     }
 
-    function switchTeam()
-    {
+    function switchTeam() {
         $playerId = $this->getCurrentPlayerId();
-        $players = self::loadPlayersBasicInfos();
-        $player = $players[$playerId];
-        $playerName = $player['player_name'];
+        $playerName = $this->getCurrentPlayerName();
 
-        $sql = "SELECT player_team_id FROM player WHERE player_id='$playerId'";
-        $teamId = self::getUniqueValueFromDB($sql);
-        $teamId = $teamId == 1 ? 2 : 1;
-
-        $sql = "UPDATE player SET player_team_id='$teamId' WHERE player_id='$playerId'";
-        self::DbQuery( $sql );
+        $teamId = $this->teamRepository->switchTeam($playerId);
 
         self::notifyAllPlayers('switchTeam', "$playerName switch to team $teamId", array(
             'playerId' => $playerId,

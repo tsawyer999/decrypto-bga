@@ -21,4 +21,20 @@ class TeamRepository
 
         return $teams;
     }
+
+    function changeTeamName($teamId, $teamName) {
+        $sql = "UPDATE team SET team_name='$teamName' WHERE team_id='$teamId'";
+        $this->db->dbQuery2($sql);
+    }
+
+    function switchTeam($playerId) {
+        $sql = "SELECT player_team_id FROM player WHERE player_id='$playerId'";
+        $teamId = $this->db->getUniqueValueFromDb2($sql);
+        $teamId = $teamId == 1 ? 2 : 1;
+
+        $sql = "UPDATE player SET player_team_id='$teamId' WHERE player_id='$playerId'";
+        $this->db->dbQuery2($sql);
+
+        return $teamId;
+    }
 }

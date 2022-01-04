@@ -307,36 +307,30 @@ define(
             ///////////////////////////////////////////////////
             //// Reaction to cometD notifications
 
-            /*
-            setupNotifications:
-
-            In this method, you associate each of your game notifications with your local method to handle it.
-
-            Note: game notification names correspond to "notifyAllPlayers" and "notifyPlayer" calls in
-                  your decryptotest.game.php file.
-
-            */
             setupNotifications: function () {
                 dojo.subscribe('changeTeamName', this, "notif_changeteamName");
                 dojo.subscribe('completeTeamSetup', this, "notif_completeTeamSetup");
                 dojo.subscribe('switchTeam', this, "notif_switchTeam");
             },
 
-            // TODO: from this point and below, you can write your game notifications handling methods
             notif_changeteamName: function (notification) {
-                console.log('onChangeteamName', notification);
-                const labelId = `teamNameLabel${notification.args.teamId}`;
+                const teamId = notification.args.teamId;
+                const teamName = notification.args.teamName;
+
+                const labelId = `teamNameLabel${teamId}`;
                 const teamNameLabel = document.getElementById(labelId);
                 if (teamNameLabel) {
-                    teamNameLabel.innerText = notification.args.teamName;
+                    teamNameLabel.innerText = teamName;
                 } else {
                     throw `label with id [${labelId}] not found`;
                 }
 
             },
+
             notif_completeTeamSetup: function (notification) {
                 console.log('onCompleteTeamSetup', notification);
             },
+
             notif_switchTeam: function (notification) {
                 console.log('onSwitchTeam', notification);
                 const sourceId = `teamMember${notification.args.playerId}`;
