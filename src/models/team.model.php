@@ -6,7 +6,10 @@ class Team
     public $name;
     public $playerIds;
 
-    function __construct() {
-        $this->playerIds = [];
+    function __construct($id, $name, $playerIds)
+    {
+        $this->id = $id;
+        $this->name = $name;
+        $this->playerIds = $playerIds;
     }
 }

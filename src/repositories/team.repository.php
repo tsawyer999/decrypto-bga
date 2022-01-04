@@ -1,23 +1,40 @@
 <?php
 
+require_once(__DIR__ . "/../models/team.model.php");
+
 class TeamRepository
 {
     private $db;
 
-    function __construct($db) {
+    function __construct($db)
+    {
         $this->db = $db;
     }
 
-    function getTeams() {
+    function getTeams()
+    {
         $sql = "SELECT "
             . "team.team_id id, "
             . "team.team_name name, "
-            . "GROUP_CONCAT(player.player_id) as members "
+            . "GROUP_CONCAT(player.player_id) as player_ids "
             . "FROM team "
             . "LEFT JOIN player "
             . "ON player.player_team_id = team.team_id "
             . "GROUP BY team.team_id";
-        $teams = $this->db->getCollectionFromDb2($sql);
+        $teams = $this->db->getObjectListFromDd2($sql);
+
+        return $this->convertTeamsRecordToModel($teams);
+    }
+
+    private function convertTeamsRecordToModel($teamList): array
+    {
+        $teams = [];
+        foreach ($teamList as $t)
+        {
+            $playerIds = explode(',', $t['player_ids']);
+            $team = new Team($t['id'], $t['name'], $playerIds);
+            array_push($teams, $team);
+        }
 
         return $teams;
     }

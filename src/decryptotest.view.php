@@ -1,5 +1,5 @@
 <?php
-require_once( APP_BASE_PATH."view/common/game.view.php" );
+require_once(APP_BASE_PATH."view/common/game.view.php");
 require_once("models/dictionary-random-picker.php");
 require_once("words.php");
 
@@ -18,11 +18,6 @@ class view_decryptotest_decryptotest extends game_view
         $rounds = $this->getRounds();
         $rounds_nbr = count($rounds);
         $this->tpl['ROUNDS_NBR'] = $rounds_nbr;
-
-        $teams = [
-            new Team('team white'),
-            new Team('team black')
-        ];
 
         $words = str_getcsv(french);
         $dictionary = new DictionaryRandomPicker($words);

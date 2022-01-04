@@ -138,16 +138,24 @@ class DecryptoTest extends Table
 //////////// Utility functions
 ////////////
 
-    function getCollectionFromDb2($sql) {
+    function getCollectionFromDb2($sql)
+    {
         return self::getCollectionFromDb($sql);
     }
 
-    function dbQuery2($sql) {
+    function dbQuery2($sql)
+    {
         return self::DbQuery($sql);
     }
 
-    function getUniqueValueFromDb2($sql) {
+    function getUniqueValueFromDb2($sql)
+    {
         return self::getUniqueValueFromDB($sql);
+    }
+
+    function getObjectListFromDd2($sql)
+    {
+        return self::getObjectListFromDB($sql);
     }
 
 //////////////////////////////////////////////////////////////////////////////

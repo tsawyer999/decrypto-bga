@@ -57,9 +57,8 @@ define(
                     dojo.place(teamBlock, 'teams');
                     dojo.connect(document.getElementById(`changeTeamName${team.id}Button`), 'onclick', this.subscribeChangeTeamNameClick(team.id));
 
-                    const memberIds = (team.members || '').trim().split(',');
-                    for (const memberId of memberIds) {
-                        const player = gamedatas.players[memberId];
+                    for (const playerId of team.playerIds) {
+                        const player = gamedatas.players[playerId];
                         if (player) {
                             const teamMemberBlock = this.format_block('jstpl_team_member', {
                                 id: player.id,
@@ -67,7 +66,7 @@ define(
                             });
                             dojo.place(teamMemberBlock, `teamMembers${team.id}`);
                         } else {
-                            console.error(`player with id ${memberId} not found in`, gamedatas.players)
+                            console.error(`player with id ${playerId} not found in`, gamedatas.players)
                         }
                     }
                 }
