@@ -15,6 +15,21 @@ $machinestates = array(
         "possibleactions" => array( "changeTeamName", "completeTeamSetup", "switchTeam" ),
         "transitions" => array( "electEncryptor" => 30 )
     ),
+    //
+    // I N I T I A L I Z E   R O U N D
+    //
+    // TURN
+    //      Encryptor
+    //          turn_id | player_id
+    //
+    //      ROUND
+    //          GiveHints
+    //          GuessHints
+    // insert turn data
+    //
+    // replace stElectEncryptor by stEnableEncryptor
+    // update flow to go back at initializeRound
+    //
     30 => array(
         "name" => "electEncryptor",
         "description" => "",

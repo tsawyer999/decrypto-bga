@@ -54,6 +54,19 @@ CREATE TABLE IF NOT EXISTS `sequence`
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
 -- ----------------------------------------------------
+-- H I N T
+--
+
+CREATE TABLE IF NOT EXISTS `hint`
+(
+    `hint_round_id` INT(10) UNSIGNED NOT NULL,
+    `guess_team_id` INT(10) UNSIGNED NOT NULL,
+    `guess_sequence_position` INT(10) UNSIGNED NOT NULL,
+    `guess_sequence_value` INT(10) UNSIGNED NOT NULL,
+    PRIMARY KEY (`hint_round_id`, `guess_team_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
+
+-- ----------------------------------------------------
 -- G U E S S
 --
 CREATE TABLE IF NOT EXISTS `guess`
@@ -63,7 +76,7 @@ CREATE TABLE IF NOT EXISTS `guess`
     `guess_sequence_position` INT(10) UNSIGNED NOT NULL,
     `guess_sequence_value` INT(10) UNSIGNED NOT NULL,
     PRIMARY KEY (`guess_round_id`, `guess_team_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
 -- ----------------------------------------------------
 -- T O K E N
