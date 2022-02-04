@@ -1,96 +1,72 @@
-
--- ------
--- BGA framework: © Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
--- DecryptoTest implementation : © <Sébastien D'Errico> <sebastien@hollox.net>
---
--- This code has been produced on the BGA studio platform for use on http://boardgamearena.com.
--- See http://en.boardgamearena.com/#!doc/Studio for more information.
--- -----
-
--- dbmodel.sql
-
--- This is the file where you are describing the database schema of your game
--- Basically, you just have to export from PhpMyAdmin your table structure and copy/paste
--- this export here.
--- Note that the database itself and the standard tables ("global", "stats", "gamelog" and "player") are
--- already created and must not be created here
-
--- Note: The database schema is created from this file when the game starts. If you modify this file,
---       you have to restart a game to see your changes in database.
-
--- ----------------------------------------------------
--- T E A M
---
-CREATE TABLE IF NOT EXISTS `team` (
-    `team_id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-    `team_name` VARCHAR(50) NOT NULL,
-    PRIMARY KEY (`team_id`)
+CREATE TABLE IF NOT EXISTS team (
+    team_id INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+    team_name VARCHAR(50) NOT NULL,
+    team_order_id INT(10) NOT NULL,
+    PRIMARY KEY (team_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
-INSERT INTO `team` ( team_id, team_name )
-VALUES ( 1, 'team1' ),
-       ( 2, 'team2' );
+-- MOVE TO GAME.PHP
+INSERT INTO team (team_id, team_name)
+VALUES (1, 'team1'),
+       (2, 'team2');
 
--- ----------------------------------------------------
--- W O R D
---
-CREATE TABLE IF NOT EXISTS `word`
+CREATE TABLE IF NOT EXISTS word
 (
-    `word_team_id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-    `word_position` INT(10) UNSIGNED NOT NULL,
-    `word_value` VARCHAR(50) NOT NULL,
-    PRIMARY KEY (`word_team_id`, `word_position`)
+    word_id INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+    word_team_id INT(10) UNSIGNED NOT NULL,
+    word_position INT(10) UNSIGNED NOT NULL,
+    word_value VARCHAR(50) NOT NULL,
+    PRIMARY KEY (word_id),
+    FOREIGN KEY (word_team_id) REFERENCES team (team_id),
+    CONSTRAINT uc_team_id_position UNIQUE (word_team_id, word_position)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
--- ----------------------------------------------------
--- S E Q U E N C E
---
-CREATE TABLE IF NOT EXISTS `sequence`
+CREATE TABLE IF NOT EXISTS turn
 (
-    `sequence_round_id` INT(10) UNSIGNED NOT NULL,
-    `sequence_position` INT(10) UNSIGNED NOT NULL,
-    `sequence_value` VARCHAR(50) NOT NULL,
-    PRIMARY KEY (`sequence_round_id`, `sequence_position`)
+    turn_id INT(10) UNSIGNED NOT NULL,
+    turn_round_id INT(10) UNSIGNED NOT NULL,
+    PRIMARY KEY (turn_id, turn_round_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
--- ----------------------------------------------------
--- H I N T
---
-
-CREATE TABLE IF NOT EXISTS `hint`
+CREATE TABLE IF NOT EXISTS code
 (
-    `hint_round_id` INT(10) UNSIGNED NOT NULL,
-    `guess_team_id` INT(10) UNSIGNED NOT NULL,
-    `guess_sequence_position` INT(10) UNSIGNED NOT NULL,
-    `guess_sequence_value` INT(10) UNSIGNED NOT NULL,
-    PRIMARY KEY (`hint_round_id`, `guess_team_id`)
+    code_id INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+    code_turn_id INT(10) UNSIGNED NOT NULL,
+    code_word_id INT(10) UNSIGNED NOT NULL,
+    code_position INT(10) UNSIGNED NOT NULL,
+    PRIMARY KEY (code_id),
+    FOREIGN KEY (code_turn_id) REFERENCES turn (turn_id),
+    FOREIGN KEY (code_word_id) REFERENCES word (word_id),
+    CONSTRAINT uc_turn_id_position_word_id UNIQUE (code_turn_id, code_word_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
--- ----------------------------------------------------
--- G U E S S
---
-CREATE TABLE IF NOT EXISTS `guess`
+CREATE TABLE IF NOT EXISTS hint
 (
-    `guess_round_id` INT(10) UNSIGNED NOT NULL,
-    `guess_team_id` INT(10) UNSIGNED NOT NULL,
-    `guess_sequence_position` INT(10) UNSIGNED NOT NULL,
-    `guess_sequence_value` INT(10) UNSIGNED NOT NULL,
-    PRIMARY KEY (`guess_round_id`, `guess_team_id`)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
-
--- ----------------------------------------------------
--- T O K E N
---
-CREATE TABLE IF NOT EXISTS `token`
-(
-    `token_round_id` INT(10) UNSIGNED NOT NULL,
-    `token_team_id` INT(10) UNSIGNED NOT NULL,
-    `token_type_id` INT(10) UNSIGNED NOT NULL,
-    PRIMARY KEY (`token_round_id`, `token_team_id`, `token_type_id`)
+    hint_id INT(10) UNSIGNED NOT NULL,
+    hint_code_id INT(10) UNSIGNED NOT NULL,
+    hint_value VARCHAR(50) NOT NULL,
+    hint_player_id INT(10) UNSIGNED NOT NULL,
+    PRIMARY KEY (hint_id),
+    FOREIGN KEY (hint_code_id) REFERENCES code (code_id),
+    FOREIGN KEY (hint_player_id) REFERENCES player (player_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
--- ----------------------------------------------------
--- P L A Y E R
---
+CREATE TABLE IF NOT EXISTS guess
+(
+    guess_round_id INT(10) UNSIGNED NOT NULL,
+    guess_team_id INT(10) UNSIGNED NOT NULL,
+    guess_code_position INT(10) UNSIGNED NOT NULL,
+    guess_code_value INT(10) UNSIGNED NOT NULL,
+    PRIMARY KEY (guess_round_id, guess_team_id, guess_code_position)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
+
+CREATE TABLE IF NOT EXISTS token
+(
+    token_turn_id INT(10) UNSIGNED NOT NULL,
+    token_team_id INT(10) UNSIGNED NOT NULL,
+    token_type_id INT(10) UNSIGNED NOT NULL,
+    PRIMARY KEY (token_turn_id, token_team_id, token_type_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
+
 ALTER TABLE `player` ADD `player_team_id` INT(10) UNSIGNED NOT NULL;
 ALTER TABLE `player` ADD CONSTRAINT fk_player_team_id FOREIGN KEY (player_team_id) REFERENCES team (team_id);
