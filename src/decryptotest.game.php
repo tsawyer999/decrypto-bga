@@ -31,9 +31,6 @@ class DecryptoTest extends Table
         $codeRepository = new CodeRepository($this);
         $this->codeService = new CodeService($codeRepository, $this->teamService);
 
-        $this->teamService->newTeam('team A');
-        $this->teamService->newTeam('team B');
-
         self::initGameStateLabels(array(
             //    "my_first_global_variable" => 10,
             //    "my_second_global_variable" => 11,
@@ -60,6 +57,12 @@ class DecryptoTest extends Table
 
     protected function setupNewGame($players, $options = array())
     {
+        $param_number_team = 2;
+        for ($i = 1; $i <= $param_number_team; $i++)
+        {
+            $this->teamService->newTeam("team $i");
+        }
+
         // Set the colors of the players with HTML color code
         // The default below is red/green/blue/orange/brown
         // The number of colors defined here must correspond to the maximum number of players allowed for the gams
@@ -117,7 +120,7 @@ class DecryptoTest extends Table
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
         $current_player_id = self::getCurrentPlayerId();    // !! We must only return informations visible by this player !!
 
-//        $result['words'] = $this->codeService->getWords($current_player_id);
+//        $result['words'] = $this->codeService->getWordsForPlayer($current_player_id);
         $result['teams'] = $this->teamService->getTeams();
 
         return $result;
@@ -183,8 +186,8 @@ class DecryptoTest extends Table
 
     function changeTeamName($teamId, $teamName) {
         $this->teamService->changeTeamName($teamId, $teamName);
-        $playerName = $this->getCurrentPlayerName();
 
+        $playerName = $this->getCurrentPlayerName();
         self::notifyAllPlayers('changeTeamName', "$playerName change team $teamId name to $teamName", array(
             'teamId' => $teamId,
             'teamName' => $teamName
@@ -198,10 +201,9 @@ class DecryptoTest extends Table
 
     function switchTeam() {
         $playerId = $this->getCurrentPlayerId();
-        $playerName = $this->getCurrentPlayerName();
-
         $teamId = $this->teamService->switchTeam($playerId);
 
+        $playerName = $this->getCurrentPlayerName();
         self::notifyAllPlayers('switchTeam', "$playerName switch to team $teamId", array(
             'playerId' => $playerId,
             'playerName' => $playerName,
