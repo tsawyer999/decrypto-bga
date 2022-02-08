@@ -5,44 +5,37 @@ $machinestates = array(
         "description" => "",
         "type" => "manager",
         "action" => "stGameSetup",
-        "transitions" => array("" => 20)
+        "transitions" => array("teamSetup" => 10)
     ),
-    20 => array(
+    10 => array(
         "name" => "teamSetup",
         "description" => clienttranslate('${actplayer} must choose a team'),
         "descriptionmyturn" => clienttranslate('${you} must choose a team!'),
         "type" => "multipleactiveplayer",
         "possibleactions" => array( "changeTeamName", "completeTeamSetup", "switchTeam" ),
-        "transitions" => array( "electEncryptor" => 30 )
+        "transitions" => array( "beginGame" => 20 )
     ),
-    //
-    // I N I T I A L I Z E   R O U N D
-    //
-    // TURN
-    //      Encryptor
-    //          turn_id | player_id
-    //
-    //      ROUND
-    //          GiveHints
-    //          GuessHints
-    // insert turn data
-    //
-    // replace stElectEncryptor by stEnableEncryptor
-    // update flow to go back at initializeRound
-    //
-    30 => array(
-        "name" => "electEncryptor",
+    20 => array(
+        "name" => "beginGame",
         "description" => "",
         "type" => "game",
-        "action" => "stElectEncryptor",
+        "action" => "stBeginGame",
+        "transitions" => array( "beginTurn" => 30 )
+    ),
+    30 => array(
+        "name" => "beginTurn",
+        "description" => "",
+        "type" => "game",
+        "action" => "stBeginTurn",
         "transitions" => array( "giveHints" => 40 )
     ),
     40 => array(
         "name" => "giveHints",
         "description" => clienttranslate('${actplayer} must supply hints'),
         "descriptionmyturn" => clienttranslate('${you} must supply hints'),
-        "type" => "activeplayer",
+        "type" => "multipleactiveplayer",
         "possibleactions" => array( "giveHints" ),
+        "action" => "stGiveHints",
         "transitions" => array( "guessHints" => 50 )
     ),
     50 => array(
@@ -52,7 +45,14 @@ $machinestates = array(
         "type" => "multipleactiveplayer",
         "possibleactions" => array( "guessHints" ),
         "action" => "stGuessHints",
-        "transitions" => array( "electEncryptor" => 30, "gameEnd" => 99 )
+        "transitions" => array( "endTurn" => 60 )
+    ),
+    60 => array(
+        "name" => "endTurn",
+        "description" => "",
+        "type" => "game",
+        "action" => "stEndTurn",
+        "transitions" => array( "beginTurn" => 30, "gameEnd" => 99 )
     ),
     99 => array(
         "name" => "gameEnd",

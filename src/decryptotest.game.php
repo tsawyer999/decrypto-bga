@@ -179,7 +179,7 @@ class DecryptoTest extends Table
 
     function completeTeamSetup() {
         $playerId = $this->getCurrentPlayerId();
-        $this->gamestate->setPlayerNonMultiactive($playerId, 'electEncryptor');
+        $this->gamestate->setPlayerNonMultiactive($playerId, 'beginGame');
     }
 
     function switchTeam() {
@@ -197,8 +197,6 @@ class DecryptoTest extends Table
 
     function giveHints($hints)
     {
-        $this->gamestate->setAllPlayersMultiactive();
-        $this->gamestate->nextState( "guessHints" );
     }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -250,16 +248,34 @@ class DecryptoTest extends Table
     }
     */
 
-    function stElectEncryptor()
+    function stBeginGame()
     {
-        $players = self::loadPlayersBasicInfos();
-        $playerId = key($players);
-        $this->gamestate->changeActivePlayer($playerId);
-        $this->gamestate->nextState( 'giveHints' );
+//        $players = self::loadPlayersBasicInfos();
+//        $playerId = key($players);
+//        $this->gamestate->changeActivePlayer($playerId);
+        $this->gamestate->nextState( 'beginTurn' );
     }
 
-    function stGuessHints()
+    function stBeginTurn()
     {
+        $this->gamestate->nextState( "giveHints" );
+    }
+
+    function stGiveHints() {
+        $this->gamestate->setAllPlayersMultiactive();
+    }
+
+    function stGuessHints() {
+        $this->gamestate->setAllPlayersMultiactive();
+    }
+
+    function stEndTurn()
+    {
+        if (true) {
+            $this->gamestate->nextState( "newTurn" );
+        } else {
+            $this->gamestate->nextState( "gameEnd" );
+        }
 //        $this->gamestate->setAllPlayersMultiactive();
     }
 
