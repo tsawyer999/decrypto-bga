@@ -11,6 +11,20 @@ class TeamRepository
         $this->db = $db;
     }
 
+    function newTeam($name)
+    {
+        $sql = "INSERT INTO team "
+            . "("
+            . "team_name, "
+            . "team_order_id "
+            . ") VALUES ("
+            . "'" . $name . "',"
+            . "0"
+            . ")";
+
+        $this->db->dbQuery2($sql);
+    }
+
     function getTeams()
     {
         $sql = "SELECT "

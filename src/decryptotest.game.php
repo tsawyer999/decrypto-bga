@@ -1,12 +1,19 @@
 <?php
 
 require_once(APP_GAMEMODULE_PATH.'module/table/table.game.php');
+
 require_once('models/team.model.php');
+
+require_once('repositories/code.repository.php');
 require_once('repositories/team.repository.php');
+
+require_once('services/code.service.php');
+require_once('services/team.service.php');
 
 class DecryptoTest extends Table
 {
-    private $teamRepository;
+    private $codeService;
+    private $teamService;
 
     function __construct()
     {
@@ -18,7 +25,14 @@ class DecryptoTest extends Table
         // Note: afterwards, you can get/set the global variables with getGameStateValue/setGameStateInitialValue/setGameStateValue
         parent::__construct();
 
-        $this->teamRepository = new TeamRepository($this);
+        $teamRepository = new TeamRepository($this);
+        $this->teamService = new TeamService($teamRepository);
+
+        $codeRepository = new CodeRepository($this);
+        $this->codeService = new CodeService($codeRepository, $this->teamService);
+
+        $this->teamService->newTeam('team A');
+        $this->teamService->newTeam('team B');
 
         self::initGameStateLabels(array(
             //    "my_first_global_variable" => 10,
@@ -103,8 +117,8 @@ class DecryptoTest extends Table
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
         $current_player_id = self::getCurrentPlayerId();    // !! We must only return informations visible by this player !!
 
-        $teams = $this->teamRepository->getTeams();
-        $result['teams'] = $teams;
+//        $result['words'] = $this->codeService->getWords($current_player_id);
+        $result['teams'] = $this->teamService->getTeams();
 
         return $result;
     }
@@ -168,7 +182,7 @@ class DecryptoTest extends Table
     */
 
     function changeTeamName($teamId, $teamName) {
-        $this->teamRepository->changeTeamName($teamId, $teamName);
+        $this->teamService->changeTeamName($teamId, $teamName);
         $playerName = $this->getCurrentPlayerName();
 
         self::notifyAllPlayers('changeTeamName', "$playerName change team $teamId name to $teamName", array(
@@ -186,7 +200,7 @@ class DecryptoTest extends Table
         $playerId = $this->getCurrentPlayerId();
         $playerName = $this->getCurrentPlayerName();
 
-        $teamId = $this->teamRepository->switchTeam($playerId);
+        $teamId = $this->teamService->switchTeam($playerId);
 
         self::notifyAllPlayers('switchTeam', "$playerName switch to team $teamId", array(
             'playerId' => $playerId,
