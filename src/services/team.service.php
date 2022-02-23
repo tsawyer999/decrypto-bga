@@ -6,26 +6,28 @@ class TeamService
 {
     private $teamRepository;
 
-    function __construct($teamRepository)
+    function __construct(TeamRepository $teamRepository)
     {
         $this->teamRepository = $teamRepository;
     }
 
-    function newTeam($name)
+    function newTeam($name): void
     {
-        return $this->teamRepository->newTeam($name);
+        $this->teamRepository->newTeam($name);
     }
 
-    function getTeams()
+    function getTeams(): array
     {
         return $this->teamRepository->getTeams();
     }
 
-    function changeTeamName($teamId, $teamName) {
-        return $this->teamRepository->changeTeamName($teamId, $teamName);
+    function changeTeamName($teamId, $teamName): void
+    {
+        $this->teamRepository->changeTeamName($teamId, $teamName);
     }
 
-    function switchTeam($playerId) {
+    function switchTeam($playerId): int
+    {
         return $this->teamRepository->switchTeam($playerId);
     }
 }

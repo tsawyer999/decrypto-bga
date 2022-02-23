@@ -1,17 +1,17 @@
 <?php
 require_once(APP_BASE_PATH."view/common/game.view.php");
 require_once("models/dictionary-random-picker.php");
-require_once("words.php");
 
 class view_decryptotest_decryptotest extends game_view
 {
-    function getGameName() {
+    function getGameName(): string {
         return "decryptotest";
     }
 
     function build_page( $viewArgs )
     {
         // Get players & players number
+/*
         $players = $this->game->loadPlayersBasicInfos();
         $players_nbr = count( $players );
 
@@ -26,7 +26,7 @@ class view_decryptotest_decryptotest extends game_view
         $this->tpl['WORD2'] = $dictionary->pick();
         $this->tpl['WORD3'] = $dictionary->pick();
         $this->tpl['WORD4'] = $dictionary->pick();
-
+*/
         /*
                 $template1 = '';
                 $this->page->begin_block($template1, "team");
@@ -64,21 +64,6 @@ class view_decryptotest_decryptotest extends game_view
                 $this->tpl['MY_HAND'] = self::_("My hand");
         */
         /*********** Do not change anything below this line  ************/
-    }
-
-    function getRounds() {
-        return [
-            [
-                "hints" => ["word1a", "word1b", "word1c"],
-                "guess_sequence" => [1, 3, 2],
-                "correct_sequence" => [1, 3, 2]
-            ],
-            [
-                "hints" => ["word2a", "word2b", "word2c"],
-                "guess_sequence" => [3, 1, 4],
-                "correct_sequence" => [3, 1, 4]
-            ]
-        ];
     }
 }
 

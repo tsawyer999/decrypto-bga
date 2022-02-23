@@ -6,12 +6,12 @@ class TeamRepository
 {
     private $db;
 
-    function __construct($db)
+    function __construct(DecryptoTest $db)
     {
         $this->db = $db;
     }
 
-    function newTeam($name)
+    function newTeam(string $name): void
     {
         $sql = "INSERT INTO team "
             . "("
@@ -25,7 +25,7 @@ class TeamRepository
         $this->db->dbQuery2($sql);
     }
 
-    function getTeams()
+    function getTeams(): array
     {
         $sql = "SELECT "
             . "team.team_id id, "
@@ -37,10 +37,10 @@ class TeamRepository
             . "GROUP BY team.team_id";
         $teams = $this->db->getObjectListFromDd2($sql);
 
-        return $this->convertTeamsRecordToModel($teams);
+        return $this->convertTeamsRecordToModels($teams);
     }
 
-    private function convertTeamsRecordToModel($teamList): array
+    private function convertTeamsRecordToModels(array $teamList): array
     {
         $teams = [];
         foreach ($teamList as $t)
@@ -53,12 +53,12 @@ class TeamRepository
         return $teams;
     }
 
-    function changeTeamName($teamId, $teamName) {
+    function changeTeamName(int $teamId, string $teamName): void {
         $sql = "UPDATE team SET team_name='$teamName' WHERE team_id='$teamId'";
         $this->db->dbQuery2($sql);
     }
 
-    function switchTeam($playerId) {
+    function switchTeam(int $playerId): int {
         $sql = "SELECT player_team_id FROM player WHERE player_id='$playerId'";
         $teamId = $this->db->getUniqueValueFromDb2($sql);
         $teamId = $teamId == 1 ? 2 : 1;

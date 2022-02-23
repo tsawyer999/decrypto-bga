@@ -269,6 +269,10 @@ class DecryptoTest extends Table
 //        $players = self::loadPlayersBasicInfos();
 //        $playerId = key($players);
 //        $this->gamestate->changeActivePlayer($playerId);
+
+        $param_number_words = 4;
+        $this->codeService->initializeWordsForAllTeams($param_number_words);
+
         $this->gamestate->nextState( 'beginTurn' );
     }
 
