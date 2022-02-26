@@ -21,7 +21,7 @@ class TeamRepository
             . ") VALUES ("
             . "'" . $team->name . "',"
             . $team->orderId . ","
-            . 'null' . ""
+            . "'" . json_encode($team->words) . "'"
             . ")";
 
         $this->db->dbQuery2($sql);
