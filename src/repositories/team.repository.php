@@ -11,15 +11,17 @@ class TeamRepository
         $this->db = $db;
     }
 
-    function newTeam(string $name): void
+    function saveTeam(Team $team): void
     {
         $sql = "INSERT INTO team "
             . "("
             . "team_name, "
-            . "team_order_id "
+            . "team_order_id, "
+            . "team_words "
             . ") VALUES ("
-            . "'" . $name . "',"
-            . "0"
+            . "'" . $team->name . "',"
+            . $team->orderId . ","
+            . 'null' . ""
             . ")";
 
         $this->db->dbQuery2($sql);
@@ -30,6 +32,7 @@ class TeamRepository
         $sql = "SELECT "
             . "team.team_id id, "
             . "team.team_name name, "
+            . "team.team_order_id order_id, "
             . "GROUP_CONCAT(player.player_id) as player_ids "
             . "FROM team "
             . "LEFT JOIN player "
@@ -46,7 +49,7 @@ class TeamRepository
         foreach ($teamList as $t)
         {
             $playerIds = explode(',', $t['player_ids']);
-            $team = new Team($t['id'], $t['name'], $playerIds);
+            $team = new Team($t['id'], $t['name'], $t['order_id'], $playerIds);
             array_push($teams, $team);
         }
 

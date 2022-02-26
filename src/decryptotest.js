@@ -45,8 +45,8 @@ define(
             "gamedatas" argument contains all datas retrieved by your "getAllDatas" PHP method.
             */
 
-            setup: function ( gamedatas ) {
-                console.log("Starting game setup");
+            setup: function (gamedatas) {
+                console.log("Starting game setup", gamedatas);
 
                 for (const teamId of Object.keys(gamedatas.teams)) {
                     const team = gamedatas.teams[teamId];

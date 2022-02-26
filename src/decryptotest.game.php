@@ -29,7 +29,7 @@ class DecryptoTest extends Table
         $this->teamService = new TeamService($teamRepository);
 
         $codeRepository = new CodeRepository($this);
-        $this->codeService = new CodeService($codeRepository, $this->teamService);
+        $this->codeService = new CodeService($codeRepository);
 
         self::initGameStateLabels(array(
             //    "my_first_global_variable" => 10,
@@ -60,7 +60,7 @@ class DecryptoTest extends Table
         $param_number_team = 2;
         for ($i = 1; $i <= $param_number_team; $i++)
         {
-            $this->teamService->newTeam("team $i");
+            $this->teamService->newTeam();
         }
 
         // Set the colors of the players with HTML color code
