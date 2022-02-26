@@ -6,30 +6,33 @@ class TeamRepository
 {
     private $db;
 
-    function __construct($db)
+    function __construct(DecryptoTest $db)
     {
         $this->db = $db;
     }
 
-    function newTeam($name)
+    function saveTeam(Team $team): void
     {
         $sql = "INSERT INTO team "
             . "("
             . "team_name, "
-            . "team_order_id "
+            . "team_order_id, "
+            . "team_words "
             . ") VALUES ("
-            . "'" . $name . "',"
-            . "0"
+            . "'" . $team->name . "',"
+            . $team->orderId . ","
+            . "'" . json_encode($team->words) . "'"
             . ")";
 
         $this->db->dbQuery2($sql);
     }
 
-    function getTeams()
+    function getTeams(): array
     {
         $sql = "SELECT "
             . "team.team_id id, "
             . "team.team_name name, "
+            . "team.team_order_id order_id, "
             . "GROUP_CONCAT(player.player_id) as player_ids "
             . "FROM team "
             . "LEFT JOIN player "
@@ -37,28 +40,28 @@ class TeamRepository
             . "GROUP BY team.team_id";
         $teams = $this->db->getObjectListFromDd2($sql);
 
-        return $this->convertTeamsRecordToModel($teams);
+        return $this->convertTeamsRecordToModels($teams);
     }
 
-    private function convertTeamsRecordToModel($teamList): array
+    private function convertTeamsRecordToModels(array $teamList): array
     {
         $teams = [];
         foreach ($teamList as $t)
         {
             $playerIds = explode(',', $t['player_ids']);
-            $team = new Team($t['id'], $t['name'], $playerIds);
+            $team = new Team($t['id'], $t['name'], $t['order_id'], $playerIds);
             array_push($teams, $team);
         }
 
         return $teams;
     }
 
-    function changeTeamName($teamId, $teamName) {
+    function changeTeamName(int $teamId, string $teamName): void {
         $sql = "UPDATE team SET team_name='$teamName' WHERE team_id='$teamId'";
         $this->db->dbQuery2($sql);
     }
 
-    function switchTeam($playerId) {
+    function switchTeam(int $playerId): int {
         $sql = "SELECT player_team_id FROM player WHERE player_id='$playerId'";
         $teamId = $this->db->getUniqueValueFromDb2($sql);
         $teamId = $teamId == 1 ? 2 : 1;

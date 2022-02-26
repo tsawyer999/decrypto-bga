@@ -1,21 +1,33 @@
 <?php
 
 require_once(__DIR__ . "/../repositories/code.repository.php");
-require_once("team.service.php");
 
 class CodeService
 {
     private $codeRepository;
-    private $teamService;
 
-    function __construct($codeRepository, $teamService)
+    function __construct(CodeRepository $codeRepository)
     {
         $this->codeRepository = $codeRepository;
-        $this->teamService = $teamService;
     }
 
-    function initializeWordsForAllTeams($numberOfWords)
+    function initializeWordsForAllTeams(int $numberOfWords): void
     {
-        $teams = $this->teamService->getTeams();
+        /*
+                $words = str_getcsv(french);
+                $dictionary = new DictionaryRandomPicker($words);
+
+                $teams = $this->teamService->getTeams();
+                foreach ($teams as $team)
+                {
+                    for ($i=0; $i<$numberOfWords; $i++) {
+                        $word = $dictionary->pick();
+
+                        $this->codeRepository->newWord();
+                        $team
+
+                    }
+        }
+        */
     }
 }

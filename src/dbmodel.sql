@@ -2,6 +2,7 @@ CREATE TABLE IF NOT EXISTS team (
     team_id INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
     team_name VARCHAR(50) NOT NULL,
     team_order_id INT(10) NOT NULL,
+    team_words JSON NULL,
     PRIMARY KEY (team_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
