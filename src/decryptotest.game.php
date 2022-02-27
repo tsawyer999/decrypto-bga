@@ -5,109 +5,58 @@ require_once(APP_GAMEMODULE_PATH.'module/table/table.game.php');
 require_once('models/team.model.php');
 
 require_once('repositories/code.repository.php');
+require_once('repositories/player.repository.php');
 require_once('repositories/team.repository.php');
 
 require_once('services/code.service.php');
+require_once('services/player.service.php');
 require_once('services/team.service.php');
 
 class DecryptoTest extends Table
 {
     private $codeService;
+    private $playerService;
     private $teamService;
 
     function __construct()
     {
-        // Your global variables labels:
-        //  Here, you can assign labels to global variables you are using for this game.
-        //  You can use any number of global variables with IDs between 10 and 99.
-        //  If your game has options (variants), you also have to associate here a label to
-        //  the corresponding ID in gameoptions.inc.php.
-        // Note: afterwards, you can get/set the global variables with getGameStateValue/setGameStateInitialValue/setGameStateValue
         parent::__construct();
-
-        $teamRepository = new TeamRepository($this);
-        $this->teamService = new TeamService($teamRepository);
 
         $codeRepository = new CodeRepository($this);
         $this->codeService = new CodeService($codeRepository);
 
-        self::initGameStateLabels(array(
-            //    "my_first_global_variable" => 10,
-            //    "my_second_global_variable" => 11,
-            //      ...
-            //    "my_first_game_variant" => 100,
-            //    "my_second_game_variant" => 101,
-            //      ...
-        ));
+        $playerRepository = new PlayerRepository($this);
+        $this->playerService = new PlayerService($playerRepository);
+
+        $teamRepository = new TeamRepository($this);
+        $this->teamService = new TeamService($teamRepository);
+
+        self::initGameStateLabels(array());
     }
 
     protected function getGameName()
     {
-        // Used for translations and stuff. Please do not modify.
         return "decryptotest";
     }
-
-    /*
-        setupNewGame:
-
-        This method is called only once, when a new game is launched.
-        In this method, you must setup the game according to the game rules, so that
-        the game is ready to be played.
-    */
 
     protected function setupNewGame($players, $options = array())
     {
         $param_number_team = 2;
         for ($i = 1; $i <= $param_number_team; $i++)
         {
-            $this->teamService->newTeam();
+            $this->teamService->createTeam();
         }
 
-        // Set the colors of the players with HTML color code
-        // The default below is red/green/blue/orange/brown
-        // The number of colors defined here must correspond to the maximum number of players allowed for the gams
         $gameinfos = self::getGameinfos();
         $default_colors = $gameinfos['player_colors'];
+        $this->playerService->savePlayers($players, $param_number_team, $default_colors);
 
-        // Create players
-        // Note: if you added some extra field on "player" table in the database (dbmodel.sql), you can initialize it there.
-        $sql = "INSERT INTO player (player_id, player_color, player_canal, player_name, player_avatar, player_team_id) VALUES ";
-        $values = array();
-        foreach ($players as $player_id => $player) {
-            $color = array_shift($default_colors);
-            $team_id = random_int(1, 2);
-            $values[] = "('".$player_id."','$color','".$player['player_canal']."','".addslashes($player['player_name'])."','".addslashes($player['player_avatar'])."',".$team_id.")";
-        }
-        $sql .= implode($values, ',');
-        self::DbQuery($sql);
         self::reattributeColorsBasedOnPreferences($players, $gameinfos['player_colors']);
         self::reloadPlayersBasicInfos();
 
-        /************ Start the game initialization *****/
-
-        // Init global values with their initial values
-        //self::setGameStateInitialValue( 'my_first_global_variable', 0 );
-
-        // Init game statistics
-        // (note: statistics used in this file must be defined in your stats.inc.php file)
-        //self::initStat( 'table', 'table_teststat1', 0 );    // Init a table statistics
-        //self::initStat( 'player', 'player_teststat1', 0 );  // Init a player statistics (for all players)
-
-        // setup the initial game situation here
         $this->gamestate->setAllPlayersMultiactive();
-
-        /************ End of the game initialization *****/
     }
 
-    /*
-        getAllDatas:
-
-        Gather all informations about current game situation (visible by the current player).
-
-        The method is called each time the game interface is displayed to a player, ie:
-        _ when the game starts
-        _ when a player refreshes the game page (F5)
-    */
     protected function getAllDatas()
     {
         $result = array();

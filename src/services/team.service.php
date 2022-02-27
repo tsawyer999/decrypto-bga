@@ -18,7 +18,7 @@ class TeamService
         $this->teamId = 0;
     }
 
-    function newTeam(): void
+    function createTeam(): void
     {
         $this->teamId++;
         $team = new Team($this->teamId, "team", $this->teamId, []);
