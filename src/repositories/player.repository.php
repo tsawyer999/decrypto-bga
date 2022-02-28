@@ -9,7 +9,7 @@ class PlayerRepository
         $this->db = $db;
     }
 
-    function savePlayers(array $players, int $param_number_team, array $default_colors)
+    public function savePlayers(array $players, int $param_number_team, array $default_colors)
     {
         // Create players
         // Note: if you added some extra field on "player" table in the database (dbmodel.sql), you can initialize it there.

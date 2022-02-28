@@ -11,7 +11,7 @@ class TeamRepository
         $this->db = $db;
     }
 
-    function saveTeam(Team $team): void
+    public function saveTeam(Team $team): void
     {
         $sql = "INSERT INTO team "
             . "("
@@ -27,7 +27,7 @@ class TeamRepository
         $this->db->dbQuery2($sql);
     }
 
-    function getTeams(): array
+    public function getTeams(): array
     {
         $sql = "SELECT "
             . "team.team_id id, "
@@ -56,12 +56,12 @@ class TeamRepository
         return $teams;
     }
 
-    function changeTeamName(int $teamId, string $teamName): void {
+    public function changeTeamName(int $teamId, string $teamName): void {
         $sql = "UPDATE team SET team_name='$teamName' WHERE team_id='$teamId'";
         $this->db->dbQuery2($sql);
     }
 
-    function switchTeam(int $playerId): int {
+    public function switchTeam(int $playerId): int {
         $sql = "SELECT player_team_id FROM player WHERE player_id='$playerId'";
         $teamId = $this->db->getUniqueValueFromDb2($sql);
         $teamId = $teamId == 1 ? 2 : 1;
@@ -72,12 +72,12 @@ class TeamRepository
         return $teamId;
     }
 
-    function getWords(): array
+    public function getWords(): array
     {
         return str_getcsv(french);
     }
 
-    function updateWords(int $teamId, array $words): void
+    public function updateWords(int $teamId, array $words): void
     {
         $sql = "UPDATE team SET "
             . "team_words = '" . json_encode($words) . "' "

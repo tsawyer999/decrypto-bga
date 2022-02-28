@@ -85,7 +85,7 @@ define(
             //                  You can use this method to perform some user interface changes at this moment.
             //
             onEnteringState: function ( stateName, args ) {
-                console.log('Entering state: ' + stateName);
+                console.log('Entering state: ' + stateName, args);
 
                 switch ( stateName ) {
                     case 'teamSetup':

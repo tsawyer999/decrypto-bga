@@ -18,29 +18,29 @@ class TeamService
         $this->teamId = 0;
     }
 
-    function createTeam(): void
+    public function createTeam(): void
     {
         $this->teamId++;
         $team = new Team($this->teamId, "team", $this->teamId, []);
         $this->teamRepository->saveTeam($team);
     }
 
-    function getTeams(): array
+    public function getTeams(): array
     {
         return $this->teamRepository->getTeams();
     }
 
-    function changeTeamName($teamId, $teamName): void
+    public function changeTeamName($teamId, $teamName): void
     {
         $this->teamRepository->changeTeamName($teamId, $teamName);
     }
 
-    function switchTeam($playerId): int
+    public function switchTeam($playerId): int
     {
         return $this->teamRepository->switchTeam($playerId);
     }
 
-    function setWordsForAllTeams(int $param_number_words): void
+    public function setWordsForAllTeams(int $param_number_words): void
     {
         $words = $this->teamRepository->getWords();
         $teamWords = [];

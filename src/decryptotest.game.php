@@ -70,6 +70,7 @@ class DecryptoTest extends Table
         $current_player_id = self::getCurrentPlayerId();    // !! We must only return informations visible by this player !!
 
 //        $result['words'] = $this->codeService->getWordsForPlayer($current_player_id);
+        $result['sequences'] = $this->codeService->generateAllSequences(3, 4);
         $result['teams'] = $this->teamService->getTeams();
 
         return $result;
@@ -215,12 +216,10 @@ class DecryptoTest extends Table
 
     function stBeginGame()
     {
-//        $players = self::loadPlayersBasicInfos();
-//        $playerId = key($players);
-//        $this->gamestate->changeActivePlayer($playerId);
-
+        $sequence_length = 3;
         $param_number_words = 4;
         $this->teamService->setWordsForAllTeams($param_number_words);
+        $this->codeService->generateAllSequences($sequence_length, $param_number_words);
 
         $this->gamestate->nextState( 'beginTurn' );
     }
