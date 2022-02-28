@@ -2,11 +2,10 @@
 
 class Team
 {
-    public $id;
-    public $name;
-    public $orderId;
-    public $playerIds;
-    public $words;
+    public int $id;
+    public string $name;
+    public int $orderId;
+    public array $playerIds;
 
     function __construct(int $id, string $name, int $orderId, array $playerIds)
     {
@@ -14,6 +13,5 @@ class Team
         $this->name = $name;
         $this->orderId = $orderId;
         $this->playerIds = $playerIds;
-        $this->words = [];
     }
 }

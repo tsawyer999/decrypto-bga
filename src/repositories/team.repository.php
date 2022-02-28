@@ -4,7 +4,7 @@ require_once(__DIR__ . "/../models/team.model.php");
 
 class TeamRepository
 {
-    private $db;
+    private DecryptoTest $db;
 
     function __construct(DecryptoTest $db)
     {
@@ -16,12 +16,10 @@ class TeamRepository
         $sql = "INSERT INTO team "
             . "("
             . "team_name, "
-            . "team_order_id, "
-            . "team_words "
+            . "team_order_id "
             . ") VALUES ("
             . "'" . $team->name . "',"
-            . $team->orderId . ","
-            . "'" . json_encode($team->words) . "'"
+            . $team->orderId
             . ")";
 
         $this->db->dbQuery2($sql);
@@ -70,19 +68,5 @@ class TeamRepository
         $this->db->dbQuery2($sql);
 
         return $teamId;
-    }
-
-    public function getWords(): array
-    {
-        return str_getcsv(french);
-    }
-
-    public function updateWords(int $teamId, array $words): void
-    {
-        $sql = "UPDATE team SET "
-            . "team_words = '" . json_encode($words) . "' "
-            . "WHERE team_id = " . $teamId;
-
-        $this->db->dbQuery2($sql);
     }
 }

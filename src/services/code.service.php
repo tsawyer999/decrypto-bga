@@ -1,17 +1,25 @@
 <?php
 
 require_once(__DIR__ . "/../repositories/code.repository.php");
+require_once(__DIR__ . "/../models/dictionary-random-picker.php");
 
 class CodeService
 {
-    private $codeRepository;
+    private CodeRepository $codeRepository;
+    private TeamRepository $teamRepository;
 
-    public function __construct(CodeRepository $codeRepository)
+    public function __construct(CodeRepository $codeRepository, TeamRepository $teamRepository)
     {
         $this->codeRepository = $codeRepository;
+        $this->teamRepository = $teamRepository;
     }
 
-    public function generateAllSequences(int $sequence_length, int $param_number_words): array
+    public function saveCodes(array $codes): void
+    {
+        $this->codeRepository->saveCodes($codes);
+    }
+
+    public function generateAllCodes(int $sequence_length, int $param_number_words): array
     {
         $availableItems = [];
 
@@ -21,11 +29,11 @@ class CodeService
         }
 
         $results = [];
-        $this->appendSequences($availableItems, $sequence_length, $results, 1, []);
+        $this->appendCodes($availableItems, $sequence_length, $results, 1, []);
         return $results;
     }
 
-    private function appendSequences(array $availableItems, int $maxLevel, array &$results, int $level, array $selectedItems): void
+    private function appendCodes(array $availableItems, int $maxLevel, array &$results, int $level, array $selectedItems): void
     {
         for ($i=0; $i<count($availableItems); $i++)
         {
@@ -40,7 +48,7 @@ class CodeService
                 $clonedAvailableItems = array_merge(array(), $availableItems);
                 array_splice($clonedAvailableItems, $i, 1);
 
-                $this->appendSequences($clonedAvailableItems, $maxLevel, $results, $level + 1, $this->pureArrayPush($selectedItems, $value));
+                $this->appendCodes($clonedAvailableItems, $maxLevel, $results, $level + 1, $this->pureArrayPush($selectedItems, $value));
             }
         }
     }
@@ -51,5 +59,28 @@ class CodeService
         array_push($r, $value);
 
         return $r;
+    }
+
+    public function getWordsForPlayer($player_id): array
+    {
+        return $this->codeRepository->getWordsForPlayer($player_id);
+    }
+
+    public function setWordsForAllTeams(int $param_number_words): void
+    {
+        $words = $this->codeRepository->getWords();
+        $dictionary = new DictionaryRandomPicker($words);
+
+        $teams = $this->teamRepository->getTeams();
+        foreach ($teams as $team)
+        {
+            $teamWords = [];
+            for ($i=0; $i<$param_number_words; $i++)
+            {
+                $word = $dictionary->pick();
+                array_push($teamWords, $word);
+            }
+            $this->codeRepository->saveWords($team->id, $teamWords);
+        }
     }
 }

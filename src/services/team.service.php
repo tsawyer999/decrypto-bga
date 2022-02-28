@@ -1,10 +1,6 @@
 <?php
 
-require_once(__DIR__ . "/../data/words.php");
-
 require_once(__DIR__ . "/../models/team.model.php");
-require_once(__DIR__ . "/../models/dictionary-random-picker.php");
-
 require_once(__DIR__ . "/../repositories/team.repository.php");
 
 class TeamService
@@ -38,23 +34,5 @@ class TeamService
     public function switchTeam($playerId): int
     {
         return $this->teamRepository->switchTeam($playerId);
-    }
-
-    public function setWordsForAllTeams(int $param_number_words): void
-    {
-        $words = $this->teamRepository->getWords();
-        $teamWords = [];
-        $dictionary = new DictionaryRandomPicker($words);
-
-        $teams = $this->teamRepository->getTeams();
-        foreach ($teams as $team)
-        {
-            for ($i=0; $i<$param_number_words; $i++)
-            {
-                $word = $dictionary->pick();
-                array_push($teamWords, $word);
-            }
-            $this->teamRepository->updateWords($team->id, $teamWords);
-        }
     }
 }

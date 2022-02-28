@@ -2,7 +2,7 @@
 
 class PlayerRepository
 {
-    private $db;
+    private DecryptoTest $db;
 
     function __construct(DecryptoTest $db)
     {

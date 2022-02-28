@@ -14,22 +14,22 @@ require_once('services/team.service.php');
 
 class DecryptoTest extends Table
 {
-    private $codeService;
-    private $playerService;
-    private $teamService;
+    private CodeService $codeService;
+    private PlayerService $playerService;
+    private TeamService $teamService;
 
     function __construct()
     {
         parent::__construct();
 
+        $teamRepository = new TeamRepository($this);
+        $this->teamService = new TeamService($teamRepository);
+
         $codeRepository = new CodeRepository($this);
-        $this->codeService = new CodeService($codeRepository);
+        $this->codeService = new CodeService($codeRepository, $teamRepository);
 
         $playerRepository = new PlayerRepository($this);
         $this->playerService = new PlayerService($playerRepository);
-
-        $teamRepository = new TeamRepository($this);
-        $this->teamService = new TeamService($teamRepository);
 
         self::initGameStateLabels(array());
     }
@@ -69,8 +69,7 @@ class DecryptoTest extends Table
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
         $current_player_id = self::getCurrentPlayerId();    // !! We must only return informations visible by this player !!
 
-//        $result['words'] = $this->codeService->getWordsForPlayer($current_player_id);
-        $result['sequences'] = $this->codeService->generateAllSequences(3, 4);
+        $result['words'] = $this->codeService->getWordsForPlayer($current_player_id);
         $result['teams'] = $this->teamService->getTeams();
 
         return $result;
@@ -218,8 +217,9 @@ class DecryptoTest extends Table
     {
         $sequence_length = 3;
         $param_number_words = 4;
-        $this->teamService->setWordsForAllTeams($param_number_words);
-        $this->codeService->generateAllSequences($sequence_length, $param_number_words);
+        $this->codeService->setWordsForAllTeams($param_number_words);
+        $codes = $this->codeService->generateAllCodes($sequence_length, $param_number_words);
+        $this->codeService->saveCodes($codes);
 
         $this->gamestate->nextState( 'beginTurn' );
     }
