@@ -6,11 +6,6 @@ CREATE TABLE IF NOT EXISTS team (
     PRIMARY KEY (team_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
--- MOVE TO GAME.PHP
--- INSERT INTO team (team_id, team_name)
--- VALUES (1, 'team1'),
---        (2, 'team2');
-
 CREATE TABLE IF NOT EXISTS word
 (
     word_id INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,

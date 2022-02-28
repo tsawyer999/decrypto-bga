@@ -40,14 +40,21 @@ class TeamService
         return $this->teamRepository->switchTeam($playerId);
     }
 
-    function setWords(int $param_number_words): void
+    function setWordsForAllTeams(int $param_number_words): void
     {
-        $words = str_getcsv(french);
+        $words = $this->teamRepository->getWords();
+        $teamWords = [];
         $dictionary = new DictionaryRandomPicker($words);
 
-        for ($i=0; $i<$param_number_words; $i++)
+        $teams = $this->teamRepository->getTeams();
+        foreach ($teams as $team)
         {
-            $word = $dictionary->pick();
+            for ($i=0; $i<$param_number_words; $i++)
+            {
+                $word = $dictionary->pick();
+                array_push($teamWords, $word);
+            }
+            $this->teamRepository->updateWords($team->id, $teamWords);
         }
     }
 }

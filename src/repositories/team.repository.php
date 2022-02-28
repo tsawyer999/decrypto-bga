@@ -71,4 +71,18 @@ class TeamRepository
 
         return $teamId;
     }
+
+    function getWords(): array
+    {
+        return str_getcsv(french);
+    }
+
+    function updateWords(int $teamId, array $words): void
+    {
+        $sql = "UPDATE team SET "
+            . "team_words = '" . json_encode($words) . "' "
+            . "WHERE team_id = " . $teamId;
+
+        $this->db->dbQuery2($sql);
+    }
 }
