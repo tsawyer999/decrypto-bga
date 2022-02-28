@@ -46,37 +46,48 @@ define(
             */
 
             setup: function (gamedatas) {
-                console.log("Starting game setup", gamedatas);
+                console.log("Starting game setup 111", gamedatas);
 
-                for (const teamId of Object.keys(gamedatas.teams)) {
-                    const team = gamedatas.teams[teamId];
-                    const teamBlock = this.format_block('jstpl_team', {
-                        id: team.id,
-                        name: team.name
-                    });
-                    dojo.place(teamBlock, 'teams');
-                    dojo.connect(document.getElementById(`changeTeamName${team.id}Button`), 'onclick', this.subscribeChangeTeamNameClick(team.id));
+                this.displayTeamsSetup(gamedatas.teams, gamedatas.players);
 
-                    for (const playerId of team.playerIds) {
-                        const player = gamedatas.players[playerId];
-                        if (player) {
-                            const teamMemberBlock = this.format_block('jstpl_team_member', {
-                                id: player.id,
-                                name: player.name
-                            });
-                            dojo.place(teamMemberBlock, `teamMembers${team.id}`);
-                        } else {
-                            console.error(`player with id ${playerId} not found in`, gamedatas.players)
-                        }
-                    }
-                }
-
-                // Setup game notifications to handle (see "setupNotifications" method below)
                 this.setupNotifications();
 
                 console.log("Ending game setup");
             },
 
+            displayTeamsSetup: function (teams, players) {
+                for (const teamId of Object.keys(teams)) {
+                    const team = teams[teamId];
+                    const teamBlock = this.getTeamTemplate(team);
+                    dojo.place(teamBlock, 'teams');
+                    dojo.connect(document.getElementById(`changeTeamName${team.id}Button`), 'onclick', this.subscribeChangeTeamNameClick(team.id));
+
+                    this.displayPlayersByTeams(team, players);
+                }
+            },
+            displayPlayersByTeams: function (team, players) {
+                for (const playerId of team.playerIds) {
+                    const player = players[playerId];
+                    if (player) {
+                        const teamMemberBlock = this.getTeamMemberTemplate(player);
+                        dojo.place(teamMemberBlock, `teamMembers${team.id}`);
+                    } else {
+                        console.error(`player with id ${playerId} not found in`, players)
+                    }
+                }
+            },
+            getTeamTemplate: function(team) {
+                return this.format_block('jstpl_team', {
+                    id: team.id,
+                    name: team.name
+                });
+            },
+            getTeamMemberTemplate: function (player) {
+                return this.format_block('jstpl_team_member', {
+                    id: player.id,
+                    name: player.name
+                });
+            },
 
             ///////////////////////////////////////////////////
             //// Game & client states

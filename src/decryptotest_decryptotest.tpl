@@ -9,9 +9,7 @@
 </div>
 
 <div id="giveHintsUi">
-    <div class="words-panel">
-        <div class="words"></div>
-    </div>
+    <div class="words"></div>
     <div class="hints-panel"></div>
 
     <!--
