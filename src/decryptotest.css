@@ -1,4 +1,3 @@
-/* teamSetup */
 .teams {
     width: 100%;
     display: flex;
@@ -22,9 +21,9 @@
     margin: 10px;
 }
 
-/* giveHints */
-.giveHintsUi {
-    border: 1px solid black;
+
+#giveHintsUi {
+    border: 1px solid blue;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -38,14 +37,20 @@
     font-size: 50px
 }
 
-.words {
+#boardUi {
+    border: 1px solid red;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+
+
+}
+
+#words {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
 
-    position: relative;
-    top: 70px;
-    left: 115px;
     height: 200px;
     width: 600px;
 }

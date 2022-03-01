@@ -1,36 +1,15 @@
 {OVERALL_GAME_HEADER}
 
 <div id="teamSetupUi">
-    <div id="teams" class="teams"></div>
+    <div id="teams"></div>
+</div>
+
+<div id="boardUi">
+    <div id="words"></div>
+    <div id="score"></div>
 </div>
 
 <div id="giveHintsUi">
-    <div id="words" class="words"></div>
-    <div class="hints-panel"></div>
-
-    <!--
-        <div class="teams-panel">
-            <div class="team-panel">
-                <h1>white team</h1>
-                <div class="tokens">
-                    <div class="token token-success"></div>
-                    <div class="token token-success"></div>
-                    <div class="token token-fail"></div>
-                    <div class="token token-fail"></div>
-                </div>
-            </div>
-            <div class="team-panel">
-                <h1>black team</h1>
-                <div class="tokens">
-                    <div class="token token-success"></div>
-                    <div class="token token-success"></div>
-                    <div class="token token-fail"></div>
-                    <div class="token token-fail"></div>
-                </div>
-            </div>
-        </div>
-
-        -->
 </div>
 
 <div id="guessHintsUi">
@@ -53,6 +32,16 @@
     let jstpl_hint = '<div class="hint">'
         + '<label for="${id}">3</label>'
         + '<input id="${id}" type="text" size="50" maxlength="50">'
+        + '</div>'
+
+    let jstpl_score = '<div>'
+        + '<div>${teamName}</div>'
+        + '<div id="score${teamId}">'
+        + '<div class="token token-success"></div>'
+        + '<div class="token token-success"></div>'
+        + '<div class="token token-fail"></div>'
+        + '<div class="token token-fail"></div>'
+        + '</div>'
         + '</div>'
 
 </script>

@@ -58,6 +58,10 @@ define(
                 }
             },
 
+            displayCodeCard(code) {
+                
+            },
+
             getWordTemplate: function(word) {
                 return this.format_block('jstpl_word', {
                     word: word
@@ -109,6 +113,7 @@ define(
                 switch (stateName) {
                     case 'teamSetup':
                         dojo.style('teamSetupUi', 'display', 'flex');
+                        dojo.style('boardUi', 'display', 'none');
                         dojo.style('giveHintsUi', 'display', 'none');
                         dojo.style('guessHintsUi', 'display', 'none');
 
@@ -123,18 +128,22 @@ define(
 
                     case 'giveHints':
                         dojo.style('teamSetupUi', 'display', 'none');
+                        dojo.style('boardUi', 'display', 'flex');
                         dojo.style('giveHintsUi', 'display', 'flex');
                         dojo.style('guessHintsUi', 'display', 'none');
 
                         const words = args.args.words;
+                        const code = args.args.code;
+
                         this.displayWords(words);
+                        this.displayCodeCard(code);
 
                         this.addActionButton('giveHintsBtn', _("Give hints"), 'onGiveHintsClick');
                         break;
 
                     case 'guessHints':
                         dojo.style('teamSetupUi', 'display', 'none');
-                        dojo.style('electEncryptorUi', 'display', 'none');
+                        dojo.style('boardUi', 'display', 'flex');
                         dojo.style('giveHintsUi', 'display', 'none');
                         dojo.style('guessHintsUi', 'display', 'flex');
 
