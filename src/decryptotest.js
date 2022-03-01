@@ -125,6 +125,9 @@ define(
                         dojo.style('giveHintsUi', 'display', 'flex');
                         dojo.style('guessHintsUi', 'display', 'none');
 
+                        const words = args.args.words;
+                        console.log("words", words);
+
                         this.addActionButton('giveHintsBtn', _("Give hints"), 'onGiveHintsClick');
                         break;
 
@@ -134,6 +137,10 @@ define(
                         dojo.style('giveHintsUi', 'display', 'none');
                         dojo.style('guessHintsUi', 'display', 'flex');
 
+                        break;
+
+                    case 'beginGame':
+                        // noop
                         break;
                     default:
                         console.error(`state [${stateName}] is not managed`)

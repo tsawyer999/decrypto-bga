@@ -66,11 +66,6 @@ class DecryptoTest extends Table
         $sql = "SELECT player_id id, player_score score, player_team_id team_id FROM player ";
         $result['players'] = self::getCollectionFromDb($sql);
 
-        // TODO: Gather all information about current game situation (visible by player $current_player_id).
-        $current_player_id = self::getCurrentPlayerId();    // !! We must only return informations visible by this player !!
-
-//        $result['words'] = $this->codeService->getWordsForPlayer($current_player_id);
-
         return $result;
     }
 
@@ -173,6 +168,16 @@ class DecryptoTest extends Table
 
         $result['players'] = $this->playerService->getPlayers();
         $result['teams'] = $this->teamService->getTeams();
+
+        return $result;
+    }
+
+    function argGiveHints()
+    {
+        $result = [];
+
+        $current_player_id = self::getCurrentPlayerId();
+        $result['words'] = $this->codeService->getWordsForPlayer($current_player_id);
 
         return $result;
     }
