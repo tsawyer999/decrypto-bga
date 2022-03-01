@@ -51,6 +51,19 @@ define(
                 console.log("Ending game setup");
             },
 
+            displayWords(words) {
+                for (const word of words) {
+                    const wordBlock = this.getWordTemplate(word);
+                    dojo.place(wordBlock, 'words');
+                }
+            },
+
+            getWordTemplate: function(word) {
+                return this.format_block('jstpl_word', {
+                    word: word
+                });
+            },
+
             displayTeamsSetup: function (teams, players) {
                 for (const teamId of Object.keys(teams)) {
                     const team = teams[teamId];
@@ -96,7 +109,6 @@ define(
                 switch (stateName) {
                     case 'teamSetup':
                         dojo.style('teamSetupUi', 'display', 'flex');
-                        dojo.style('electEncryptorUi', 'display', 'none');
                         dojo.style('giveHintsUi', 'display', 'none');
                         dojo.style('guessHintsUi', 'display', 'none');
 
@@ -109,24 +121,13 @@ define(
 
                         break;
 
-                    case 'electEncryptor':
-                        dojo.style('teamSetupUi', 'display', 'none');
-                        dojo.style('electEncryptorUi', 'display', 'flex');
-                        dojo.style('giveHintsUi', 'display', 'none');
-                        dojo.style('guessHintsUi', 'display', 'none');
-
-                        this.addActionButton('switchBtn', _("SwitchTeam"), 'onSwitchTeamClick');
-                        this.addActionButton('readyBtn', _("Ready"), 'onClickCompleteTeamSetupButton');
-                        break;
-
                     case 'giveHints':
                         dojo.style('teamSetupUi', 'display', 'none');
-                        dojo.style('electEncryptorUi', 'display', 'none');
                         dojo.style('giveHintsUi', 'display', 'flex');
                         dojo.style('guessHintsUi', 'display', 'none');
 
                         const words = args.args.words;
-                        console.log("words", words);
+                        this.displayWords(words);
 
                         this.addActionButton('giveHintsBtn', _("Give hints"), 'onGiveHintsClick');
                         break;

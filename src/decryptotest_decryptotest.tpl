@@ -4,12 +4,8 @@
     <div id="teams" class="teams"></div>
 </div>
 
-<div id="electEncryptorUi">
-    <span>guess hints</span>
-</div>
-
 <div id="giveHintsUi">
-    <div class="words"></div>
+    <div id="words" class="words"></div>
     <div class="hints-panel"></div>
 
     <!--
@@ -52,7 +48,7 @@
 
     let jstpl_team_member = '<div id="teamMember${id}" class="team-member">${name}</div>';
 
-    let jstpl_word = '<span class="word">${word}</span>';
+    let jstpl_word = '<div class="word"><span>${word}<span></span>';
 
     let jstpl_hint = '<div class="hint">'
         + '<label for="${id}">3</label>'
