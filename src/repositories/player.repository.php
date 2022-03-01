@@ -22,7 +22,13 @@ class PlayerRepository
             $team_id = $index % $param_number_team + 1;
             $values[] = "('".$player_id."','$color','".$player['player_canal']."','".addslashes($player['player_name'])."','".addslashes($player['player_avatar'])."',".$team_id.")";
         }
-        $sql .= implode($values, ',');
+        $sql .= implode(',', $values);
         $this->db->DbQuery2($sql);
+    }
+
+    public function getPlayers(): array
+    {
+        $sql = "SELECT player_id id, player_name name, player_score score, player_team_id team_id FROM player ";
+        return $this->db->getCollectionFromDb2($sql);
     }
 }

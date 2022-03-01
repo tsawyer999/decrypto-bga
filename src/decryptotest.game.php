@@ -69,8 +69,7 @@ class DecryptoTest extends Table
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
         $current_player_id = self::getCurrentPlayerId();    // !! We must only return informations visible by this player !!
 
-        $result['words'] = $this->codeService->getWordsForPlayer($current_player_id);
-        $result['teams'] = $this->teamService->getTeams();
+//        $result['words'] = $this->codeService->getWordsForPlayer($current_player_id);
 
         return $result;
     }
@@ -167,6 +166,16 @@ class DecryptoTest extends Table
 //////////////////////////////////////////////////////////////////////////////
 //////////// Game state arguments
 ////////////
+
+    function argTeamSetup()
+    {
+        $result = [];
+
+        $result['players'] = $this->playerService->getPlayers();
+        $result['teams'] = $this->teamService->getTeams();
+
+        return $result;
+    }
 
     /*
         Here, you can create methods defined as "game state arguments" (see "args" property in states.inc.php).

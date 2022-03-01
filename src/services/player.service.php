@@ -15,4 +15,9 @@ class PlayerService
     {
         $this->playerRepository->savePlayers($players, $param_number_team, $default_colors);
     }
+
+    public function getPlayers(): array
+    {
+        return $this->playerRepository->getPlayers();
+    }
 }

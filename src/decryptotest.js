@@ -46,12 +46,8 @@ define(
             */
 
             setup: function (gamedatas) {
-                console.log("Starting game setup 111", gamedatas);
-
-                this.displayTeamsSetup(gamedatas.teams, gamedatas.players);
-
+                console.log("Starting game setup", gamedatas);
                 this.setupNotifications();
-
                 console.log("Ending game setup");
             },
 
@@ -95,10 +91,9 @@ define(
             // onEnteringState: this method is called each time we are entering into a new game state.
             //                  You can use this method to perform some user interface changes at this moment.
             //
-            onEnteringState: function ( stateName, args ) {
-                console.log('Entering state: ' + stateName, args);
-
-                switch ( stateName ) {
+            onEnteringState: function (stateName, args) {
+                console.log('Entering state: ' + stateName);
+                switch (stateName) {
                     case 'teamSetup':
                         dojo.style('teamSetupUi', 'display', 'flex');
                         dojo.style('electEncryptorUi', 'display', 'none');
@@ -107,6 +102,11 @@ define(
 
                         this.addActionButton('switchBtn', _("SwitchTeam"), 'onSwitchTeamClick');
                         this.addActionButton('readyBtn', _("Ready"), 'onClickCompleteTeamSetupButton');
+
+                        const teams = args.args.teams;
+                        const players = args.args.players;
+                        this.displayTeamsSetup(teams, players);
+
                         break;
 
                     case 'electEncryptor':
