@@ -24,7 +24,7 @@ define(
     ],
     function (dojo, declare) {
         return declare("bgagame.decryptotest", ebg.core.gamegui, {
-            constructor: function () {
+            constructor() {
                 console.log('decryptotest constructor');
 
                 // Here, you can init the global variables of your user interface
@@ -46,7 +46,7 @@ define(
             "gamedatas" argument contains all datas retrieved by your "getAllDatas" PHP method.
             */
 
-            setup: function (gamedatas) {
+            setup(gamedatas) {
                 console.log("Starting game setup", gamedatas);
                 this.setupNotifications();
                 console.log("Ending game setup");
@@ -99,26 +99,26 @@ define(
                 });
             },
 
-            getCodeTemplate: function(code) {
+            getCodeTemplate(code) {
                 return this.format_block('jstpl_code', {
                     code: code.join('-')
                 });
             },
 
-            getTokensTemplate: function(team) {
+            getTokensTemplate(team) {
                 return this.format_block('jstpl_tokens', {
                     teamId: team.id,
                     teamName: team.name
                 });
             },
 
-            getWordTemplate: function(word) {
+            getWordTemplate(word) {
                 return this.format_block('jstpl_word', {
                     word: word
                 });
             },
 
-            displayTeamsSetup: function (teams, players) {
+            displayTeamsSetup(teams, players) {
                 for (const teamId of Object.keys(teams)) {
                     const team = teams[teamId];
                     const teamBlock = this.getTeamTemplate(team);
@@ -128,7 +128,7 @@ define(
                     this.displayPlayersByTeams(team, players);
                 }
             },
-            displayPlayersByTeams: function (team, players) {
+            displayPlayersByTeams(team, players) {
                 for (const playerId of team.playerIds) {
                     const player = players[playerId];
                     if (player) {
@@ -139,13 +139,13 @@ define(
                     }
                 }
             },
-            getTeamTemplate: function(team) {
+            getTeamTemplate(team) {
                 return this.format_block('jstpl_team', {
                     id: team.id,
                     name: team.name
                 });
             },
-            getTeamMemberTemplate: function (player) {
+            getTeamMemberTemplate(player) {
                 return this.format_block('jstpl_team_member', {
                     id: player.id,
                     name: player.name
@@ -158,7 +158,7 @@ define(
             // onEnteringState: this method is called each time we are entering into a new game state.
             //                  You can use this method to perform some user interface changes at this moment.
             //
-            onEnteringState: function (stateName, args) {
+            onEnteringState(stateName, args) {
                 console.log('Entering state: ' + stateName);
                 switch (stateName) {
                     case 'teamSetup': {
@@ -215,7 +215,7 @@ define(
             // onLeavingState: this method is called each time we are leaving a game state.
             //                 You can use this method to perform some user interface changes at this moment.
             //
-            onLeavingState: function ( stateName ) {
+            onLeavingState(stateName) {
                 console.log('Leaving state: '+stateName);
 
                 switch ( stateName ) {
@@ -238,7 +238,7 @@ define(
             // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
             //                        action status bar (ie: the HTML links in the status bar).
             //
-            onUpdateActionButtons: function ( stateName, args ) {
+            onUpdateActionButtons(stateName, args) {
                 console.log('onUpdateActionButtons: '+stateName);
 
                 if ( this.isCurrentPlayerActive() ) {
@@ -259,7 +259,7 @@ define(
                 }
             },
 
-            onClickCompleteTeamSetupButton: function () {
+            onClickCompleteTeamSetupButton() {
                 console.log('onClickCompleteTeamSetupButton');
                 if (!this.checkAction('completeTeamSetup', true)) {
                     return;
@@ -267,14 +267,14 @@ define(
                 this.doAction("completeTeamSetup", {});
             },
 
-            subscribeChangeTeamNameClick: function (teamId) {
+            subscribeChangeTeamNameClick(teamId) {
                 const fn = this.onChangeTeamNameClick.bind(this);
                 return function () {
                     fn(teamId);
                 };
             },
 
-            onChangeTeamNameClick: function (teamId) {
+            onChangeTeamNameClick(teamId) {
                 console.log('onChangeTeamNameClick', teamId);
                 if (!this.checkAction('changeTeamName', true)) {
                     return;
@@ -295,7 +295,7 @@ define(
                 }
             },
 
-            onSwitchTeamClick: function () {
+            onSwitchTeamClick() {
                 console.log('onSwitchTeamClick');
                 if (!this.checkAction('switchTeam', true)) {
                     return;
@@ -303,7 +303,7 @@ define(
                 this.doAction("switchTeam", {});
             },
 
-            onGiveHintsClick: function() {
+            onGiveHintsClick() {
                 console.log('onGiveHintsClick');
                 if (!this.checkAction('giveHints', true)) {
                     return;
@@ -353,7 +353,7 @@ define(
 
             /* Example:
 
-        onMyMethodToCall1: function( evt )
+        onMyMethodToCall1(evt)
         {
             console.log( 'onMyMethodToCall1' );
 
@@ -389,13 +389,13 @@ define(
             ///////////////////////////////////////////////////
             //// Reaction to cometD notifications
 
-            setupNotifications: function () {
+            setupNotifications() {
                 dojo.subscribe('changeTeamName', this, "notif_changeteamName");
                 dojo.subscribe('completeTeamSetup', this, "notif_completeTeamSetup");
                 dojo.subscribe('switchTeam', this, "notif_switchTeam");
             },
 
-            notif_changeteamName: function (notification) {
+            notif_changeteamName(notification) {
                 const teamId = notification.args.teamId;
                 const teamName = notification.args.teamName;
 
@@ -409,11 +409,11 @@ define(
 
             },
 
-            notif_completeTeamSetup: function (notification) {
+            notif_completeTeamSetup(notification) {
                 console.log('onCompleteTeamSetup', notification);
             },
 
-            notif_switchTeam: function (notification) {
+            notif_switchTeam(notification) {
                 console.log('onSwitchTeam', notification);
                 const sourceId = `teamMember${notification.args.playerId}`;
                 const targetId = `teamMembers${notification.args.teamId}`;
