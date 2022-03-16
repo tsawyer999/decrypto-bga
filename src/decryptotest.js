@@ -60,6 +60,67 @@ const templates = function(format_block) {
     };
 };
 
+const layout = function(dojo, templates) {
+    return {
+        displayWords(words) {
+            for (const word of words) {
+                const wordBlock = templates.getWord(word);
+                dojo.place(wordBlock, 'wordsSection');
+            }
+        },
+        displayCodeCard(code) {
+            const codeBlock = templates.getCode(code);
+            dojo.place(codeBlock, 'code');
+        },
+        displayGiveHints(code) {
+            let i=0;
+            for (const c of code) {
+                const giveHintBlock = templates.getGiveHint(i, c);
+                dojo.place(giveHintBlock, 'giveHintsUi');
+                i++;
+            }
+        },
+        displayTokens(teams) {
+            const successTokenBlock = templates.getSuccessToken();
+            const failTokenBlock = templates.getFailToken();
+
+            for (const team of teams) {
+                const tokensBlock = templates.getTokens(team);
+                dojo.place(tokensBlock, 'tokensSection');
+
+                const placeId = `tokens${team.id}`;
+                for (let i=0; i<team.tokens.success; i++) {
+                    dojo.place(successTokenBlock, placeId);
+                }
+                for (let i=0; i<team.tokens.fail; i++) {
+                    dojo.place(failTokenBlock, placeId);
+                }
+            }
+        },
+        displayTeamsSetup(teams, players) {
+            for (const teamId of Object.keys(teams)) {
+                const team = teams[teamId];
+                const teamBlock = templates.getTeam(team);
+                dojo.place(teamBlock, 'teams');
+                dojo.connect(document.getElementById(`changeTeamName${team.id}Button`), 'onclick', this.subscribeChangeTeamNameClick(team.id));
+
+                this.displayPlayersByTeams(team, players);
+            }
+        },
+        displayPlayersByTeams(team, players) {
+            for (const playerId of team.playerIds) {
+                const player = players[playerId];
+                if (player) {
+                    const teamMemberBlock = templates.getTeamMember(player);
+                    dojo.place(teamMemberBlock, `teamMembers${team.id}`);
+                } else {
+                    console.error(`player with id ${playerId} not found in`, players)
+                }
+            }
+        }
+    }
+};
+
 define(
     [
         "dojo",
@@ -70,14 +131,11 @@ define(
     function (dojo, declare) {
         return declare("bgagame.decryptotest", ebg.core.gamegui, {
             templates: null,
+            layout: null,
             constructor() {
                 console.log('decryptotest constructor ---');
                 this.templates = templates(this.format_block);
-
-                // Here, you can init the global variables of your user interface
-                // Example:
-                // this.myGlobalValue = 0;
-
+                this.layout = layout(dojo, this.templates);
             },
 
             /*
@@ -97,67 +155,6 @@ define(
                 console.log("Starting game setup", gamedatas);
                 this.setupNotifications();
                 console.log("Ending game setup");
-            },
-
-            displayWords(words) {
-                for (const word of words) {
-                    const wordBlock = this.templates.getWord(word);
-                    dojo.place(wordBlock, 'wordsSection');
-                }
-            },
-
-            displayCodeCard(code) {
-                const codeBlock = this.templates.getCode(code);
-                dojo.place(codeBlock, 'code');
-            },
-
-            displayGiveHints(code) {
-                let i=0;
-                for (const c of code) {
-                    const giveHintBlock = this.templates.getGiveHint(i, c);
-                    dojo.place(giveHintBlock, 'giveHintsUi');
-                    i++;
-                }
-            },
-
-            displayTokens(teams) {
-                const successTokenBlock = this.templates.getSuccessToken();
-                const failTokenBlock = this.templates.getFailToken();
-
-                for (const team of teams) {
-                    const tokensBlock = this.templates.getTokens(team);
-                    dojo.place(tokensBlock, 'tokensSection');
-
-                    const placeId = `tokens${team.id}`;
-                    for (let i=0; i<team.tokens.success; i++) {
-                        dojo.place(successTokenBlock, placeId);
-                    }
-                    for (let i=0; i<team.tokens.fail; i++) {
-                        dojo.place(failTokenBlock, placeId);
-                    }
-                }
-            },
-
-            displayTeamsSetup(teams, players) {
-                for (const teamId of Object.keys(teams)) {
-                    const team = teams[teamId];
-                    const teamBlock = this.templates.getTeam(team);
-                    dojo.place(teamBlock, 'teams');
-                    dojo.connect(document.getElementById(`changeTeamName${team.id}Button`), 'onclick', this.subscribeChangeTeamNameClick(team.id));
-
-                    this.displayPlayersByTeams(team, players);
-                }
-            },
-            displayPlayersByTeams(team, players) {
-                for (const playerId of team.playerIds) {
-                    const player = players[playerId];
-                    if (player) {
-                        const teamMemberBlock = this.templates.getTeamMember(player);
-                        dojo.place(teamMemberBlock, `teamMembers${team.id}`);
-                    } else {
-                        console.error(`player with id ${playerId} not found in`, players)
-                    }
-                }
             },
 
             ///////////////////////////////////////////////////
@@ -180,7 +177,7 @@ define(
 
                         const teams = args.args.teams;
                         const players = args.args.players;
-                        this.displayTeamsSetup(teams, players);
+                        this.layout.displayTeamsSetup(teams, players);
                     }
 
                         return;
@@ -195,10 +192,10 @@ define(
                         const words = args.args.words;
                         const code = args.args.code;
 
-                        this.displayWords(words);
-                        this.displayTokens(teams);
-                        this.displayCodeCard(code);
-                        this.displayGiveHints(code);
+                        this.layout.displayWords(words);
+                        this.layout.displayTokens(teams);
+                        this.layout.displayCodeCard(code);
+                        this.layout.displayGiveHints(code);
 
                         this.addActionButton('giveHintsBtn', _("Give hints"), 'onGiveHintsClick');
                     }
