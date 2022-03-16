@@ -5,8 +5,12 @@
 </div>
 
 <div id="boardUi">
-    <div id="words"></div>
-    <div id="score"></div>
+    <div id="wordsSection"></div>
+    <div id="codeSection">
+        <div id="codeStack"></div>
+        <div id="code"></div>
+    </div>
+    <div id="tokensSection"></div>
 </div>
 
 <div id="giveHintsUi">
@@ -27,22 +31,24 @@
 
     let jstpl_team_member = '<div id="teamMember${id}" class="team-member">${name}</div>';
 
-    let jstpl_word = '<div class="word"><span>${word}<span></span>';
+    let jstpl_word = '<div class="word"><span>${word}</span>';
 
-    let jstpl_hint = '<div class="hint">'
-        + '<label for="${id}">3</label>'
-        + '<input id="${id}" type="text" size="50" maxlength="50">'
+    let jstpl_give_hint = '<div class="hint">'
+        + '<label for="hint${id}">${code}</label>'
+        + '<input id="hint${id}" type="text" size="30" maxlength="30">'
         + '</div>'
 
-    let jstpl_score = '<div>'
+    let jstpl_tokens = '<div>'
         + '<div>${teamName}</div>'
-        + '<div id="score${teamId}">'
+        + '<div id="tokens${teamId}" class="tokens">'
         + '<div class="token token-success"></div>'
         + '<div class="token token-success"></div>'
         + '<div class="token token-fail"></div>'
         + '<div class="token token-fail"></div>'
         + '</div>'
         + '</div>'
+
+    let jstpl_code = '<div>${code}</div>';
 
 </script>
 

@@ -177,7 +177,20 @@ class DecryptoTest extends Table
         $result = [];
 
         $current_player_id = self::getCurrentPlayerId();
+
+        $result['teams'] = $this->teamService->getTeams();
         $result['words'] = $this->codeService->getWordsForPlayer($current_player_id);
+        $result['code'] = [1, 4, 2];
+        $result['tokens'] = [
+           1 => [
+               'fail' => 1,
+               'succes' => 1
+            ],
+            2 => [
+                'fail' => 0,
+                'succes' => 2
+            ]
+        ];
 
         return $result;
     }

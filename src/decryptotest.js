@@ -54,12 +54,50 @@ define(
             displayWords(words) {
                 for (const word of words) {
                     const wordBlock = this.getWordTemplate(word);
-                    dojo.place(wordBlock, 'words');
+                    dojo.place(wordBlock, 'wordsSection');
                 }
             },
 
             displayCodeCard(code) {
-                
+                const codeBlock = this.getCodeTemplate(code);
+                dojo.place(codeBlock, 'code');
+            },
+
+            displayGiveHints(code) {
+                console.log('==========', code);
+                let i=0;
+                for (const c of code) {
+                    const giveHintBlock = this.getGiveHintTemplate(i, c);
+                    dojo.place(giveHintBlock, 'giveHintsUi');
+                    i++;
+                }
+            },
+
+            displayTokens(teams) {
+                for (const team of teams) {
+                    const tokensBlock = this.getTokensTemplate(team);
+                    dojo.place(tokensBlock, 'tokensSection');
+                }
+            },
+
+            getGiveHintTemplate(index, code) {
+                return this.format_block('jstpl_give_hint', {
+                    id: index,
+                    code: code
+                });
+            },
+
+            getCodeTemplate: function(code) {
+                return this.format_block('jstpl_code', {
+                    code: code.join('-')
+                });
+            },
+
+            getTokensTemplate: function(team) {
+                return this.format_block('jstpl_tokens', {
+                    teamId: team.id,
+                    teamName: team.name
+                });
             },
 
             getWordTemplate: function(word) {
@@ -111,7 +149,7 @@ define(
             onEnteringState: function (stateName, args) {
                 console.log('Entering state: ' + stateName);
                 switch (stateName) {
-                    case 'teamSetup':
+                    case 'teamSetup': {
                         dojo.style('teamSetupUi', 'display', 'flex');
                         dojo.style('boardUi', 'display', 'none');
                         dojo.style('giveHintsUi', 'display', 'none');
@@ -123,23 +161,28 @@ define(
                         const teams = args.args.teams;
                         const players = args.args.players;
                         this.displayTeamsSetup(teams, players);
+                        }
 
-                        break;
-
-                    case 'giveHints':
+                        return;
+                    case 'giveHints': {
                         dojo.style('teamSetupUi', 'display', 'none');
                         dojo.style('boardUi', 'display', 'flex');
                         dojo.style('giveHintsUi', 'display', 'flex');
                         dojo.style('guessHintsUi', 'display', 'none');
 
+                        console.log("===> args", args.args);
+                        const teams = args.args.teams;
                         const words = args.args.words;
                         const code = args.args.code;
 
                         this.displayWords(words);
+                        this.displayTokens(teams);
                         this.displayCodeCard(code);
+                        this.displayGiveHints(code);
 
                         this.addActionButton('giveHintsBtn', _("Give hints"), 'onGiveHintsClick');
-                        break;
+                        }
+                        return;
 
                     case 'guessHints':
                         dojo.style('teamSetupUi', 'display', 'none');
@@ -147,11 +190,11 @@ define(
                         dojo.style('giveHintsUi', 'display', 'none');
                         dojo.style('guessHintsUi', 'display', 'flex');
 
-                        break;
+                        return;
 
                     case 'beginGame':
                         // noop
-                        break;
+                        return;
                     default:
                         console.error(`state [${stateName}] is not managed`)
                 }
