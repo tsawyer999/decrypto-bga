@@ -40,13 +40,12 @@
 
     let jstpl_tokens = '<div>'
         + '<div>${teamName}</div>'
-        + '<div id="tokens${teamId}" class="tokens">'
-        + '<div class="token token-success"></div>'
-        + '<div class="token token-success"></div>'
-        + '<div class="token token-fail"></div>'
-        + '<div class="token token-fail"></div>'
+        + '<div id="tokens${teamId}" class="tokens"></div>'
         + '</div>'
-        + '</div>'
+
+    let jstpl_token_success = '<div class="token token-success"></div>';
+
+    let jstpl_token_fail = '<div class="token token-fail"></div>';
 
     let jstpl_code = '<div>${code}</div>';
 

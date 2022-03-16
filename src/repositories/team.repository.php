@@ -31,7 +31,9 @@ class TeamRepository
             . "team.team_id id, "
             . "team.team_name name, "
             . "team.team_order_id order_id, "
-            . "GROUP_CONCAT(player.player_id) as player_ids "
+            . "GROUP_CONCAT(player.player_id) AS player_ids, "
+            . "1 AS token_success, "
+            . "1 AS token_fail "
             . "FROM team "
             . "LEFT JOIN player "
             . "ON player.player_team_id = team.team_id "
@@ -48,6 +50,8 @@ class TeamRepository
         {
             $playerIds = explode(',', $t['player_ids']);
             $team = new Team($t['id'], $t['name'], $t['order_id'], $playerIds);
+            $team->tokens->success = $t['token_success'];
+            $team->tokens->fail = $t['token_fail'];
             array_push($teams, $team);
         }
 

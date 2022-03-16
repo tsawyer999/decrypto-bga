@@ -17,7 +17,8 @@
 
 define(
     [
-        "dojo","dojo/_base/declare",
+        "dojo",
+        "dojo/_base/declare",
         "ebg/core/gamegui",
         "ebg/counter"
     ],
@@ -74,9 +75,20 @@ define(
             },
 
             displayTokens(teams) {
+                const successTokenBlock = this.format_block('jstpl_token_success', {});
+                const failTokenBlock = this.format_block('jstpl_token_fail', {});
+
                 for (const team of teams) {
                     const tokensBlock = this.getTokensTemplate(team);
                     dojo.place(tokensBlock, 'tokensSection');
+
+                    const placeId = `tokens${team.id}`;
+                    for (let i=0; i<team.tokens.success; i++) {
+                        dojo.place(successTokenBlock, placeId);
+                    }
+                    for (let i=0; i<team.tokens.fail; i++) {
+                        dojo.place(failTokenBlock, placeId);
+                    }
                 }
             },
 
