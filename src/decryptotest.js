@@ -15,6 +15,51 @@
  *
  */
 
+const templates = function(format_block) {
+    return {
+        getTokens(team) {
+            return format_block('jstpl_tokens', {
+                teamId: team.id,
+                teamName: team.name
+            });
+        },
+        getSuccessToken() {
+            return format_block('jstpl_token_success', {})
+        },
+        getFailToken() {
+            return format_block('jstpl_token_fail', {})
+        },
+        getGiveHint(index, code) {
+            return format_block('jstpl_give_hint', {
+                id: index,
+                code: code
+            });
+        },
+        getCode(code) {
+            return format_block('jstpl_code', {
+                code: code.join('-')
+            });
+        },
+        getWord(word) {
+            return format_block('jstpl_word', {
+                word: word
+            });
+        },
+        getTeam(team) {
+            return format_block('jstpl_team', {
+                id: team.id,
+                name: team.name
+            });
+        },
+        getTeamMember(player) {
+            return format_block('jstpl_team_member', {
+                id: player.id,
+                name: player.name
+            });
+        },
+    };
+};
+
 define(
     [
         "dojo",
@@ -24,8 +69,10 @@ define(
     ],
     function (dojo, declare) {
         return declare("bgagame.decryptotest", ebg.core.gamegui, {
+            templates: null,
             constructor() {
-                console.log('decryptotest constructor');
+                console.log('decryptotest constructor ---');
+                this.templates = templates(this.format_block);
 
                 // Here, you can init the global variables of your user interface
                 // Example:
@@ -54,32 +101,31 @@ define(
 
             displayWords(words) {
                 for (const word of words) {
-                    const wordBlock = this.getWordTemplate(word);
+                    const wordBlock = this.templates.getWord(word);
                     dojo.place(wordBlock, 'wordsSection');
                 }
             },
 
             displayCodeCard(code) {
-                const codeBlock = this.getCodeTemplate(code);
+                const codeBlock = this.templates.getCode(code);
                 dojo.place(codeBlock, 'code');
             },
 
             displayGiveHints(code) {
-                console.log('==========', code);
                 let i=0;
                 for (const c of code) {
-                    const giveHintBlock = this.getGiveHintTemplate(i, c);
+                    const giveHintBlock = this.templates.getGiveHint(i, c);
                     dojo.place(giveHintBlock, 'giveHintsUi');
                     i++;
                 }
             },
 
             displayTokens(teams) {
-                const successTokenBlock = this.format_block('jstpl_token_success', {});
-                const failTokenBlock = this.format_block('jstpl_token_fail', {});
+                const successTokenBlock = this.templates.getSuccessToken();
+                const failTokenBlock = this.templates.getFailToken();
 
                 for (const team of teams) {
-                    const tokensBlock = this.getTokensTemplate(team);
+                    const tokensBlock = this.templates.getTokens(team);
                     dojo.place(tokensBlock, 'tokensSection');
 
                     const placeId = `tokens${team.id}`;
@@ -92,36 +138,10 @@ define(
                 }
             },
 
-            getGiveHintTemplate(index, code) {
-                return this.format_block('jstpl_give_hint', {
-                    id: index,
-                    code: code
-                });
-            },
-
-            getCodeTemplate(code) {
-                return this.format_block('jstpl_code', {
-                    code: code.join('-')
-                });
-            },
-
-            getTokensTemplate(team) {
-                return this.format_block('jstpl_tokens', {
-                    teamId: team.id,
-                    teamName: team.name
-                });
-            },
-
-            getWordTemplate(word) {
-                return this.format_block('jstpl_word', {
-                    word: word
-                });
-            },
-
             displayTeamsSetup(teams, players) {
                 for (const teamId of Object.keys(teams)) {
                     const team = teams[teamId];
-                    const teamBlock = this.getTeamTemplate(team);
+                    const teamBlock = this.templates.getTeam(team);
                     dojo.place(teamBlock, 'teams');
                     dojo.connect(document.getElementById(`changeTeamName${team.id}Button`), 'onclick', this.subscribeChangeTeamNameClick(team.id));
 
@@ -132,24 +152,12 @@ define(
                 for (const playerId of team.playerIds) {
                     const player = players[playerId];
                     if (player) {
-                        const teamMemberBlock = this.getTeamMemberTemplate(player);
+                        const teamMemberBlock = this.templates.getTeamMember(player);
                         dojo.place(teamMemberBlock, `teamMembers${team.id}`);
                     } else {
                         console.error(`player with id ${playerId} not found in`, players)
                     }
                 }
-            },
-            getTeamTemplate(team) {
-                return this.format_block('jstpl_team', {
-                    id: team.id,
-                    name: team.name
-                });
-            },
-            getTeamMemberTemplate(player) {
-                return this.format_block('jstpl_team_member', {
-                    id: player.id,
-                    name: player.name
-                });
             },
 
             ///////////////////////////////////////////////////
@@ -173,7 +181,7 @@ define(
                         const teams = args.args.teams;
                         const players = args.args.players;
                         this.displayTeamsSetup(teams, players);
-                        }
+                    }
 
                         return;
                     case 'giveHints': {
@@ -193,7 +201,7 @@ define(
                         this.displayGiveHints(code);
 
                         this.addActionButton('giveHintsBtn', _("Give hints"), 'onGiveHintsClick');
-                        }
+                    }
                         return;
 
                     case 'guessHints':
