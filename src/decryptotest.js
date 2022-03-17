@@ -102,7 +102,7 @@ const layout = function(dojo, templates) {
                 const team = teams[teamId];
                 const teamBlock = templates.getTeam(team);
                 dojo.place(teamBlock, 'teams');
-                dojo.connect(document.getElementById(`changeTeamName${team.id}Button`), 'onclick', this.subscribeChangeTeamNameClick(team.id));
+                // dojo.connect(document.getElementById(`changeTeamName${team.id}Button`), 'onclick', this.subscribeChangeTeamNameClick(team.id));
 
                 this.displayPlayersByTeams(team, players);
             }
@@ -121,6 +121,59 @@ const layout = function(dojo, templates) {
     }
 };
 
+const states = function(that, dojo, layout, addActionButton) {
+    return {
+        teamSetup: {
+            entering(args) {
+                dojo.style('teamSetupUi', 'display', 'flex');
+                dojo.style('boardUi', 'display', 'none');
+                dojo.style('giveHintsUi', 'display', 'none');
+                dojo.style('guessHintsUi', 'display', 'none');
+
+                addActionButton.bind(that)('switchBtn', _("SwitchTeam"), 'onSwitchTeamClick');
+                addActionButton.bind('readyBtn', _("Ready"), 'onClickCompleteTeamSetupButton');
+
+                const teams = args.teams;
+                const players = args.players;
+                layout.displayTeamsSetup(teams, players);
+            },
+            leaving() {
+            }
+        },
+        giveHints: {
+            entering(args) {
+                dojo.style('teamSetupUi', 'display', 'none');
+                dojo.style('boardUi', 'display', 'flex');
+                dojo.style('giveHintsUi', 'display', 'flex');
+                dojo.style('guessHintsUi', 'display', 'none');
+
+                const teams = args.teams;
+                const words = args.words;
+                const code = args.code;
+
+                layout.displayWords(words);
+                layout.displayTokens(teams);
+                layout.displayCodeCard(code);
+                layout.displayGiveHints(code);
+
+                // addActionButton('giveHintsBtn', _("Give hints"), 'onGiveHintsClick');
+            },
+            leaving() {
+            }
+        },
+        guessHints: {
+            entering(args) {
+                dojo.style('teamSetupUi', 'display', 'none');
+                dojo.style('boardUi', 'display', 'flex');
+                dojo.style('giveHintsUi', 'display', 'none');
+                dojo.style('guessHintsUi', 'display', 'flex');
+            },
+            leaving() {
+            }
+        }
+    }
+};
+
 define(
     [
         "dojo",
@@ -130,26 +183,12 @@ define(
     ],
     function (dojo, declare) {
         return declare("bgagame.decryptotest", ebg.core.gamegui, {
-            templates: null,
-            layout: null,
+            that: this,
             constructor() {
-                console.log('decryptotest constructor ---');
-                this.templates = templates(this.format_block);
-                this.layout = layout(dojo, this.templates);
+                const t = templates(this.format_block);
+                const l = layout(dojo, t);
+                this.states = states(this, dojo, l, this.addActionButton);
             },
-
-            /*
-            setup:
-
-            This method must set up the game user interface according to current game situation specified
-            in parameters.
-
-            The method is called each time the game interface is displayed to a player, ie:
-            _ when the game starts
-            _ when a player refreshes the game page (F5)
-
-            "gamedatas" argument contains all datas retrieved by your "getAllDatas" PHP method.
-            */
 
             setup(gamedatas) {
                 console.log("Starting game setup", gamedatas);
@@ -157,86 +196,21 @@ define(
                 console.log("Ending game setup");
             },
 
-            ///////////////////////////////////////////////////
-            //// Game & client states
-
-            // onEnteringState: this method is called each time we are entering into a new game state.
-            //                  You can use this method to perform some user interface changes at this moment.
-            //
             onEnteringState(stateName, args) {
-                console.log('Entering state: ' + stateName);
-                switch (stateName) {
-                    case 'teamSetup': {
-                        dojo.style('teamSetupUi', 'display', 'flex');
-                        dojo.style('boardUi', 'display', 'none');
-                        dojo.style('giveHintsUi', 'display', 'none');
-                        dojo.style('guessHintsUi', 'display', 'none');
-
-                        this.addActionButton('switchBtn', _("SwitchTeam"), 'onSwitchTeamClick');
-                        this.addActionButton('readyBtn', _("Ready"), 'onClickCompleteTeamSetupButton');
-
-                        const teams = args.args.teams;
-                        const players = args.args.players;
-                        this.layout.displayTeamsSetup(teams, players);
-                    }
-
-                        return;
-                    case 'giveHints': {
-                        dojo.style('teamSetupUi', 'display', 'none');
-                        dojo.style('boardUi', 'display', 'flex');
-                        dojo.style('giveHintsUi', 'display', 'flex');
-                        dojo.style('guessHintsUi', 'display', 'none');
-
-                        console.log("===> args", args.args);
-                        const teams = args.args.teams;
-                        const words = args.args.words;
-                        const code = args.args.code;
-
-                        this.layout.displayWords(words);
-                        this.layout.displayTokens(teams);
-                        this.layout.displayCodeCard(code);
-                        this.layout.displayGiveHints(code);
-
-                        this.addActionButton('giveHintsBtn', _("Give hints"), 'onGiveHintsClick');
-                    }
-                        return;
-
-                    case 'guessHints':
-                        dojo.style('teamSetupUi', 'display', 'none');
-                        dojo.style('boardUi', 'display', 'flex');
-                        dojo.style('giveHintsUi', 'display', 'none');
-                        dojo.style('guessHintsUi', 'display', 'flex');
-
-                        return;
-
-                    case 'beginGame':
-                        // noop
-                        return;
-                    default:
-                        console.error(`state [${stateName}] is not managed`)
+                console.log("Entering state [" + stateName + "]");
+                if (this.states[stateName]) {
+                    this.states[stateName].entering(args.args);
+                } else {
+                    console.error(`entering state [${stateName}] is not managed`)
                 }
             },
 
-            // onLeavingState: this method is called each time we are leaving a game state.
-            //                 You can use this method to perform some user interface changes at this moment.
-            //
             onLeavingState(stateName) {
-                console.log('Leaving state: '+stateName);
-
-                switch ( stateName ) {
-                    /* Example:
-
-                case 'myGameState':
-
-                    // Hide the HTML block we are displaying only during this game state
-                    dojo.style( 'my_html_block_id', 'display', 'none' );
-
-                    break;
-                   */
-
-
-                    case 'dummmy':
-                        break;
+                console.log("Leaving state [" + stateName + "]");
+                if (this.states[stateName]) {
+                    this.states[stateName].leaving();
+                } else {
+                    console.error(`leaving state [${stateName}] is not managed`)
                 }
             },
 
@@ -265,7 +239,6 @@ define(
             },
 
             onClickCompleteTeamSetupButton() {
-                console.log('onClickCompleteTeamSetupButton');
                 if (!this.checkAction('completeTeamSetup', true)) {
                     return;
                 }
