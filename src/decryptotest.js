@@ -60,7 +60,7 @@ const templates = function(that) {
     };
 };
 
-const layout = function(dojo, templates) {
+const layout = function(that, dojo, templates) {
     return {
         displayWords(words) {
             for (const word of words) {
@@ -102,7 +102,7 @@ const layout = function(dojo, templates) {
                 const team = teams[teamId];
                 const teamBlock = templates.getTeam(team);
                 dojo.place(teamBlock, 'teams');
-                // dojo.connect(document.getElementById(`changeTeamName${team.id}Button`), 'onclick', this.subscribeChangeTeamNameClick(team.id));
+                dojo.connect(document.getElementById(`changeTeamName${team.id}Button`), 'onclick', that.subscribeChangeTeamNameClick(team.id));
 
                 this.displayPlayersByTeams(team, players);
             }
@@ -184,7 +184,7 @@ define(
             that: this,
             constructor() {
                 const t = templates(this);
-                const l = layout(dojo, t);
+                const l = layout(this, dojo, t);
                 this.states = states(this, dojo, l);
             },
 
