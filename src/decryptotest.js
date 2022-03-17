@@ -15,44 +15,44 @@
  *
  */
 
-const templates = function(format_block) {
+const templates = function(that) {
     return {
         getTokens(team) {
-            return format_block('jstpl_tokens', {
+            return that.format_block('jstpl_tokens', {
                 teamId: team.id,
                 teamName: team.name
             });
         },
         getSuccessToken() {
-            return format_block('jstpl_token_success', {})
+            return that.format_block('jstpl_token_success', {})
         },
         getFailToken() {
-            return format_block('jstpl_token_fail', {})
+            return that.format_block('jstpl_token_fail', {})
         },
         getGiveHint(index, code) {
-            return format_block('jstpl_give_hint', {
+            return that.format_block('jstpl_give_hint', {
                 id: index,
                 code: code
             });
         },
         getCode(code) {
-            return format_block('jstpl_code', {
+            return that.format_block('jstpl_code', {
                 code: code.join('-')
             });
         },
         getWord(word) {
-            return format_block('jstpl_word', {
+            return that.format_block('jstpl_word', {
                 word: word
             });
         },
         getTeam(team) {
-            return format_block('jstpl_team', {
+            return that.format_block('jstpl_team', {
                 id: team.id,
                 name: team.name
             });
         },
         getTeamMember(player) {
-            return format_block('jstpl_team_member', {
+            return that.format_block('jstpl_team_member', {
                 id: player.id,
                 name: player.name
             });
@@ -121,7 +121,7 @@ const layout = function(dojo, templates) {
     }
 };
 
-const states = function(that, dojo, layout, addActionButton) {
+const states = function(that, dojo, layout) {
     return {
         teamSetup: {
             entering(args) {
@@ -130,8 +130,8 @@ const states = function(that, dojo, layout, addActionButton) {
                 dojo.style('giveHintsUi', 'display', 'none');
                 dojo.style('guessHintsUi', 'display', 'none');
 
-                addActionButton.bind(that)('switchBtn', _("SwitchTeam"), 'onSwitchTeamClick');
-                addActionButton.bind(that)('readyBtn', _("Ready"), 'onClickCompleteTeamSetupButton');
+                that.addActionButton('switchBtn', _("SwitchTeam"), 'onSwitchTeamClick');
+                that.addActionButton('readyBtn', _("Ready"), 'onClickCompleteTeamSetupButton');
 
                 layout.displayTeamsSetup(args.teams, args.players);
             },
@@ -183,9 +183,9 @@ define(
         return declare("bgagame.decryptotest", ebg.core.gamegui, {
             that: this,
             constructor() {
-                const t = templates(this.format_block);
+                const t = templates(this);
                 const l = layout(dojo, t);
-                this.states = states(this, dojo, l, this.addActionButton);
+                this.states = states(this, dojo, l);
             },
 
             setup(gamedatas) {
