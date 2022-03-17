@@ -131,11 +131,9 @@ const states = function(that, dojo, layout, addActionButton) {
                 dojo.style('guessHintsUi', 'display', 'none');
 
                 addActionButton.bind(that)('switchBtn', _("SwitchTeam"), 'onSwitchTeamClick');
-                addActionButton.bind('readyBtn', _("Ready"), 'onClickCompleteTeamSetupButton');
+                addActionButton.bind(that)('readyBtn', _("Ready"), 'onClickCompleteTeamSetupButton');
 
-                const teams = args.teams;
-                const players = args.players;
-                layout.displayTeamsSetup(teams, players);
+                layout.displayTeamsSetup(args.teams, args.players);
             },
             leaving() {
             }
