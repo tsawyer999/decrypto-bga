@@ -230,6 +230,12 @@ define(
                     giveHints: giveHints(this, dojo, l),
                     guessHints: guessHints(this, dojo, l)
                 }
+
+                this.notifications = {
+                    changeTeamName: this.notif_changeteamName,
+                    completeTeamSetup: this.notif_completeTeamSetup,
+                    switchTeam: this.notif_switchTeam
+                }
             },
 
             setup(gamedatas) {
@@ -278,9 +284,9 @@ define(
             },
 
             setupNotifications() {
-                dojo.subscribe('changeTeamName', this, "notif_changeteamName");
-                dojo.subscribe('completeTeamSetup', this, "notif_completeTeamSetup");
-                dojo.subscribe('switchTeam', this, "notif_switchTeam");
+                for (let notificationName in this.notifications) {
+                    dojo.subscribe(notificationName, this, this.notifications[notificationName]);
+                }
             },
 
             notif_changeteamName(notification) {
