@@ -15,44 +15,44 @@
  *
  */
 
-const templates = function(that) {
+const templates = function(format_block) {
     return {
         getTokens(team) {
-            return that.format_block('jstpl_tokens', {
+            return format_block('jstpl_tokens', {
                 teamId: team.id,
                 teamName: team.name
             });
         },
         getSuccessToken() {
-            return that.format_block('jstpl_token_success', {})
+            return format_block('jstpl_token_success', {})
         },
         getFailToken() {
-            return that.format_block('jstpl_token_fail', {})
+            return format_block('jstpl_token_fail', {})
         },
         getGiveHint(index, code) {
-            return that.format_block('jstpl_give_hint', {
+            return format_block('jstpl_give_hint', {
                 id: index,
                 code: code
             });
         },
         getCode(code) {
-            return that.format_block('jstpl_code', {
+            return format_block('jstpl_code', {
                 code: code.join('-')
             });
         },
         getWord(word) {
-            return that.format_block('jstpl_word', {
+            return format_block('jstpl_word', {
                 word: word
             });
         },
         getTeam(team) {
-            return that.format_block('jstpl_team', {
+            return format_block('jstpl_team', {
                 id: team.id,
                 name: team.name
             });
         },
         getTeamMember(player) {
-            return that.format_block('jstpl_team_member', {
+            return format_block('jstpl_team_member', {
                 id: player.id,
                 name: player.name
             });
@@ -97,12 +97,13 @@ const layout = function(that, dojo, templates) {
                 }
             }
         },
-        displayTeamsSetup(teams, players) {
+        displayTeamsSetup(teams, players, onChangeTeamNameClick) {
             for (const teamId of Object.keys(teams)) {
                 const team = teams[teamId];
+                console.log({team});
                 const teamBlock = templates.getTeam(team);
                 dojo.place(teamBlock, 'teams');
-                dojo.connect(document.getElementById(`changeTeamName${team.id}Button`), 'onclick', that.subscribeChangeTeamNameClick(team.id));
+                dojo.connect(document.getElementById(`changeTeamName${team.id}Button`), 'onclick', () => onChangeTeamNameClick(team.id));
 
                 this.displayPlayersByTeams(team, players);
             }
@@ -121,55 +122,109 @@ const layout = function(that, dojo, templates) {
     }
 };
 
-const states = function(that, dojo, layout) {
+const teamSetup = function(that, dojo, layout) {
     return {
-        teamSetup: {
-            entering(args) {
-                dojo.style('teamSetupUi', 'display', 'flex');
-                dojo.style('boardUi', 'display', 'none');
-                dojo.style('giveHintsUi', 'display', 'none');
-                dojo.style('guessHintsUi', 'display', 'none');
+        entering(args) {
+            console.log("teamSetup.entering");
+            dojo.style('teamSetupUi', 'display', 'flex');
+            dojo.style('boardUi', 'display', 'none');
+            dojo.style('giveHintsUi', 'display', 'none');
+            dojo.style('guessHintsUi', 'display', 'none');
 
-                that.addActionButton('switchBtn', _("SwitchTeam"), 'onSwitchTeamClick');
-                that.addActionButton('readyBtn', _("Ready"), 'onClickCompleteTeamSetupButton');
+            that.addActionButton('switchBtn', _("SwitchTeam"), this.onSwitchTeamClick);
+            that.addActionButton('readyBtn', _("Ready"), this.onClickCompleteTeamSetupButton);
 
-                layout.displayTeamsSetup(args.teams, args.players);
-            },
-            leaving() {
+            layout.displayTeamsSetup(args.teams, args.players, this.onChangeTeamNameClick);
+            console.log("end");
+        },
+        leaving() {
+        },
+        onSwitchTeamClick() {
+            console.log('onSwitchTeamClick');
+            if (!that.checkAction('switchTeam', true)) {
+                return;
+            }
+            that.doAction("switchTeam", {});
+        },
+        onClickCompleteTeamSetupButton() {
+            if (!that.checkAction('completeTeamSetup', true)) {
+                return;
+            }
+            that.doAction("completeTeamSetup", {});
+        },
+        onChangeTeamNameClick(teamId) {
+            console.log('onChangeTeamNameClick', teamId);
+            if (!that.checkAction('changeTeamName', true)) {
+                return;
+            }
+
+            const textboxId = `teamName${teamId}`;
+            const teamNameTextbox = document.getElementById(textboxId);
+            if (teamNameTextbox) {
+                const teamName = teamNameTextbox.value;
+                teamNameTextbox.value = '';
+
+                that.doAction("changeTeamName", {
+                    teamId : teamId,
+                    name: teamName
+                });
+            } else {
+                throw `textbox with id [${textboxId}] not found`;
             }
         },
-        giveHints: {
-            entering(args) {
-                dojo.style('teamSetupUi', 'display', 'none');
-                dojo.style('boardUi', 'display', 'flex');
-                dojo.style('giveHintsUi', 'display', 'flex');
-                dojo.style('guessHintsUi', 'display', 'none');
+    };
+};
 
-                const teams = args.teams;
-                const words = args.words;
-                const code = args.code;
+const giveHints = function(that, dojo, layout) {
+    return {
+        entering(args) {
+            dojo.style('teamSetupUi', 'display', 'none');
+            dojo.style('boardUi', 'display', 'flex');
+            dojo.style('giveHintsUi', 'display', 'flex');
+            dojo.style('guessHintsUi', 'display', 'none');
 
-                layout.displayWords(words);
-                layout.displayTokens(teams);
-                layout.displayCodeCard(code);
-                layout.displayGiveHints(code);
+            const teams = args.teams;
+            const words = args.words;
+            const code = args.code;
 
-                // addActionButton('giveHintsBtn', _("Give hints"), 'onGiveHintsClick');
-            },
-            leaving() {
-            }
+            layout.displayWords(words);
+            layout.displayTokens(teams);
+            layout.displayCodeCard(code);
+            layout.displayGiveHints(code);
+
+            that.addActionButton('giveHintsBtn', _("Give hints"), this.onGiveHintsClick);
         },
-        guessHints: {
-            entering(args) {
-                dojo.style('teamSetupUi', 'display', 'none');
-                dojo.style('boardUi', 'display', 'flex');
-                dojo.style('giveHintsUi', 'display', 'none');
-                dojo.style('guessHintsUi', 'display', 'flex');
-            },
-            leaving() {
+        leaving() {
+        },
+        onGiveHintsClick() {
+            console.log('onGiveHintsClick');
+            if (!this.checkAction('giveHints', true)) {
+                return;
             }
+            const inputs = document.querySelectorAll(".hint input");
+            console.log(inputs);
+            let hints = [];
+            for (const input of inputs) {
+                hints.push({ id: input.id, value: input.value });
+            }
+            const payload = {hints: JSON.stringify(hints)};
+            console.log({payload});
+            this.doAction("giveHints", payload);
         }
-    }
+    };
+};
+
+const guessHints = function(that, dojo, layout) {
+    return {
+        entering(args) {
+            dojo.style('teamSetupUi', 'display', 'none');
+            dojo.style('boardUi', 'display', 'flex');
+            dojo.style('giveHintsUi', 'display', 'none');
+            dojo.style('guessHintsUi', 'display', 'flex');
+        },
+        leaving() {
+        }
+    };
 };
 
 define(
@@ -183,9 +238,14 @@ define(
         return declare("bgagame.decryptotest", ebg.core.gamegui, {
             that: this,
             constructor() {
-                const t = templates(this);
+                const t = templates(this.format_block);
                 const l = layout(this, dojo, t);
-                this.states = states(this, dojo, l);
+
+                this.states = {
+                    teamSetup: teamSetup(this, dojo, l),
+                    giveHints: giveHints(this, dojo, l),
+                    guessHints: guessHints(this, dojo, l)
+                }
             },
 
             setup(gamedatas) {
@@ -197,6 +257,7 @@ define(
             onEnteringState(stateName, args) {
                 console.log("Entering state [" + stateName + "]");
                 if (this.states[stateName]) {
+                    console.log(this.states[stateName].entering);
                     this.states[stateName].entering(args.args);
                 } else {
                     console.error(`entering state [${stateName}] is not managed`)
@@ -212,9 +273,6 @@ define(
                 }
             },
 
-            // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
-            //                        action status bar (ie: the HTML links in the status bar).
-            //
             onUpdateActionButtons(stateName, args) {
                 console.log('onUpdateActionButtons: '+stateName);
 
@@ -236,68 +294,6 @@ define(
                 }
             },
 
-            onClickCompleteTeamSetupButton() {
-                if (!this.checkAction('completeTeamSetup', true)) {
-                    return;
-                }
-                this.doAction("completeTeamSetup", {});
-            },
-
-            subscribeChangeTeamNameClick(teamId) {
-                const fn = this.onChangeTeamNameClick.bind(this);
-                return function () {
-                    fn(teamId);
-                };
-            },
-
-            onChangeTeamNameClick(teamId) {
-                console.log('onChangeTeamNameClick', teamId);
-                if (!this.checkAction('changeTeamName', true)) {
-                    return;
-                }
-
-                const textboxId = `teamName${teamId}`;
-                const teamNameTextbox = document.getElementById(textboxId);
-                if (teamNameTextbox) {
-                    const teamName = teamNameTextbox.value;
-                    teamNameTextbox.value = '';
-
-                    this.doAction("changeTeamName", {
-                        teamId : teamId,
-                        name: teamName
-                    });
-                } else {
-                    throw `textbox with id [${textboxId}] not found`;
-                }
-            },
-
-            onSwitchTeamClick() {
-                console.log('onSwitchTeamClick');
-                if (!this.checkAction('switchTeam', true)) {
-                    return;
-                }
-                this.doAction("switchTeam", {});
-            },
-
-            onGiveHintsClick() {
-                console.log('onGiveHintsClick');
-                if (!this.checkAction('giveHints', true)) {
-                    return;
-                }
-                const inputs = document.querySelectorAll(".hint input");
-                console.log(inputs);
-                let hints = [];
-                for (const input of inputs) {
-                    hints.push({ id: input.id, value: input.value });
-                }
-                const payload = {hints: JSON.stringify(hints)};
-                console.log({payload});
-                this.doAction("giveHints", payload);
-            },
-
-            ///////////////////////////////////////////////////
-            //// Utility methods
-
             doAction(actionName, payLoad) {
                 this.ajaxcall(`/${this.game_name}/${this.game_name}/${actionName}.html`, payLoad,
                     this,
@@ -305,65 +301,6 @@ define(
                     function (is_error) {}
                 );
             },
-            /*
-
-            Here, you can defines some utility methods that you can use everywhere in your javascript
-            script.
-
-            */
-
-
-            ///////////////////////////////////////////////////
-            //// Player's action
-
-            /*
-
-            Here, you are defining methods to handle player's action (ex: results of mouse click on
-            game objects).
-
-            Most of the time, these methods:
-            _ check the action is possible at this game state.
-            _ make a call to the game server
-
-            */
-
-            /* Example:
-
-        onMyMethodToCall1(evt)
-        {
-            console.log( 'onMyMethodToCall1' );
-
-            // Preventing default browser reaction
-            dojo.stopEvent( evt );
-
-            // Check that this action is possible (see "possibleactions" in states.inc.php)
-            if( ! this.checkAction( 'myAction' ) )
-            {   return; }
-
-            this.ajaxcall( "/decryptotest/decryptotest/myAction.html", {
-                                                                    lock: true,
-                                                                    myArgument1: arg1,
-                                                                    myArgument2: arg2,
-                                                                    ...
-                                                                 },
-                         this, function( result ) {
-
-                            // What to do after the server call if it succeeded
-                            // (most of the time: nothing)
-
-                         }, function( is_error) {
-
-                            // What to do after the server call in anyway (success or failure)
-                            // (most of the time: nothing)
-
-                         } );
-        },
-
-            */
-
-
-            ///////////////////////////////////////////////////
-            //// Reaction to cometD notifications
 
             setupNotifications() {
                 dojo.subscribe('changeTeamName', this, "notif_changeteamName");
