@@ -211,6 +211,38 @@ const guessHints = function(that, dojo, layout) {
     };
 };
 
+const notif_changeteamName = function(that) {
+    return function(notification) {
+        const teamId = notification.args.teamId;
+        const teamName = notification.args.teamName;
+
+        const labelId = `teamNameLabel${teamId}`;
+        const teamNameLabel = document.getElementById(labelId);
+        if (teamNameLabel) {
+            teamNameLabel.innerText = teamName;
+        } else {
+            throw `label with id [${labelId}] not found`;
+        }
+
+    };
+};
+
+const notif_completeTeamSetup = function(that) {
+    return function(notification) {
+        console.log('onCompleteTeamSetup', notification);
+    };
+};
+
+const notif_switchTeam = function(that) {
+    return function(notification) {
+        console.log('onSwitchTeam', notification);
+        const sourceId = `teamMember${notification.args.playerId}`;
+        const targetId = `teamMembers${notification.args.teamId}`;
+
+        that.slideToObject(sourceId, targetId).play();
+    };
+};
+
 define(
     [
         "dojo",
@@ -232,9 +264,9 @@ define(
                 }
 
                 this.notifications = {
-                    changeTeamName: this.notif_changeteamName,
-                    completeTeamSetup: this.notif_completeTeamSetup,
-                    switchTeam: this.notif_switchTeam
+                    changeTeamName: notif_changeteamName(this),
+                    completeTeamSetup: notif_completeTeamSetup(this),
+                    switchTeam: notif_switchTeam(this)
                 }
             },
 
@@ -287,32 +319,6 @@ define(
                 for (let notificationName in this.notifications) {
                     dojo.subscribe(notificationName, this, this.notifications[notificationName]);
                 }
-            },
-
-            notif_changeteamName(notification) {
-                const teamId = notification.args.teamId;
-                const teamName = notification.args.teamName;
-
-                const labelId = `teamNameLabel${teamId}`;
-                const teamNameLabel = document.getElementById(labelId);
-                if (teamNameLabel) {
-                    teamNameLabel.innerText = teamName;
-                } else {
-                    throw `label with id [${labelId}] not found`;
-                }
-
-            },
-
-            notif_completeTeamSetup(notification) {
-                console.log('onCompleteTeamSetup', notification);
-            },
-
-            notif_switchTeam(notification) {
-                console.log('onSwitchTeam', notification);
-                const sourceId = `teamMember${notification.args.playerId}`;
-                const targetId = `teamMembers${notification.args.teamId}`;
-
-                this.slideToObject(sourceId, targetId).play();
             }
         });
     }
