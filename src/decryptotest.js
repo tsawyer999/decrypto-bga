@@ -1,20 +1,3 @@
-/**
- *------
- * BGA framework: © Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
- * DecryptoTest implementation : © <Your name here> <Your email address here>
- *
- * This code has been produced on the BGA studio platform for use on http://boardgamearena.com.
- * See http://en.boardgamearena.com/#!doc/Studio for more information.
- * -----
- *
- * decryptotest.js
- *
- * DecryptoTest user interface script
- *
- * In this file, you are describing the logic of your user interface, in Javascript language.
- *
- */
-
 const templates = function(format_block) {
     return {
         getTokens(team) {
@@ -100,7 +83,6 @@ const layout = function(that, dojo, templates) {
         displayTeamsSetup(teams, players, onChangeTeamNameClick) {
             for (const teamId of Object.keys(teams)) {
                 const team = teams[teamId];
-                console.log({team});
                 const teamBlock = templates.getTeam(team);
                 dojo.place(teamBlock, 'teams');
                 dojo.connect(document.getElementById(`changeTeamName${team.id}Button`), 'onclick', () => onChangeTeamNameClick(team.id));
@@ -125,7 +107,6 @@ const layout = function(that, dojo, templates) {
 const teamSetup = function(that, dojo, layout) {
     return {
         entering(args) {
-            console.log("teamSetup.entering");
             dojo.style('teamSetupUi', 'display', 'flex');
             dojo.style('boardUi', 'display', 'none');
             dojo.style('giveHintsUi', 'display', 'none');
@@ -135,12 +116,12 @@ const teamSetup = function(that, dojo, layout) {
             that.addActionButton('readyBtn', _("Ready"), this.onClickCompleteTeamSetupButton);
 
             layout.displayTeamsSetup(args.teams, args.players, this.onChangeTeamNameClick);
-            console.log("end");
         },
         leaving() {
         },
+        updateActionButtons() {
+        },
         onSwitchTeamClick() {
-            console.log('onSwitchTeamClick');
             if (!that.checkAction('switchTeam', true)) {
                 return;
             }
@@ -153,7 +134,6 @@ const teamSetup = function(that, dojo, layout) {
             that.doAction("completeTeamSetup", {});
         },
         onChangeTeamNameClick(teamId) {
-            console.log('onChangeTeamNameClick', teamId);
             if (!that.checkAction('changeTeamName', true)) {
                 return;
             }
@@ -196,6 +176,8 @@ const giveHints = function(that, dojo, layout) {
         },
         leaving() {
         },
+        updateActionButtons() {
+        },
         onGiveHintsClick() {
             console.log('onGiveHintsClick');
             if (!this.checkAction('giveHints', true)) {
@@ -223,7 +205,9 @@ const guessHints = function(that, dojo, layout) {
             dojo.style('guessHintsUi', 'display', 'flex');
         },
         leaving() {
-        }
+        },
+        updateActionButtons() {
+        },
     };
 };
 
@@ -257,7 +241,6 @@ define(
             onEnteringState(stateName, args) {
                 console.log("Entering state [" + stateName + "]");
                 if (this.states[stateName]) {
-                    console.log(this.states[stateName].entering);
                     this.states[stateName].entering(args.args);
                 } else {
                     console.error(`entering state [${stateName}] is not managed`)
@@ -274,31 +257,23 @@ define(
             },
 
             onUpdateActionButtons(stateName, args) {
-                console.log('onUpdateActionButtons: '+stateName);
-
-                if ( this.isCurrentPlayerActive() ) {
-                    switch ( stateName ) {
-                        /*
-                                 Example:
-
-                                 case 'myGameState':
-
-                                    // Add 3 action buttons in the action status bar:
-
-                                    this.addActionButton( 'button_1_id', _('Button 1 label'), 'onMyMethodToCall1' );
-                                    this.addActionButton( 'button_2_id', _('Button 2 label'), 'onMyMethodToCall2' );
-                                    this.addActionButton( 'button_3_id', _('Button 3 label'), 'onMyMethodToCall3' );
-                                    break;
-                        */
-                    }
+                console.log("Update action buttons with state [" + stateName + "]");
+                if (this.states[stateName]) {
+                    this.states[stateName].updateActionButtons();
+                } else {
+                    console.error(`update action buttons with state [${stateName}] is not managed`)
                 }
             },
 
             doAction(actionName, payLoad) {
                 this.ajaxcall(`/${this.game_name}/${this.game_name}/${actionName}.html`, payLoad,
                     this,
-                    function (result) {},
-                    function (is_error) {}
+                    function (result) {
+                        console.log(`action [${actionName}] success with result ${result}`);
+                    },
+                    function (error) {
+                        console.log(`action [${actionName}] fails with error ${error}`);
+                    }
                 );
             },
 
