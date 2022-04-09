@@ -12,7 +12,7 @@ class CodeRepository
 
     public function saveCodes(array $codes): void
     {
-        $sql = "INSERT INTO code (code_value) VALUES ";
+        $sql = "INSERT INTO codes (value) VALUES ";
         $values = array();
 
         foreach ($codes as $code) {
@@ -29,12 +29,12 @@ class CodeRepository
 
     public function getWordsForPlayer($player_id): array
     {
-        $sql = "SELECT word_draw.word_draw_value "
-            . "FROM word_draw "
+        $sql = "SELECT word_draws.value "
+            . "FROM word_draws "
             . "LEFT JOIN teams "
-            . "ON team.team_id = word_draw.word_draw_team_id "
+            . "ON teams.id = word_draws.team_id "
             . "LEFT JOIN player "
-            . "ON player.team_id = teams.team_id "
+            . "ON player.team_id = teams.id "
             . "WHERE player.player_id = " . $player_id;
         $words = $this->db->getUniqueValueFromDb2($sql);
         if ($words == null) {
@@ -45,9 +45,9 @@ class CodeRepository
 
     public function saveWords(int $teamId, array $words): void
     {
-        $sql = "INSERT INTO word_draw ("
-            . "word_draw_team_id, "
-            . "word_draw_value "
+        $sql = "INSERT INTO word_draws ("
+            . "team_id, "
+            . "value "
             . ") VALUES ("
             . $teamId . ","
             . "'" . json_encode($words) . "'"
