@@ -31,10 +31,10 @@ class CodeRepository
     {
         $sql = "SELECT word_draw.word_draw_value "
             . "FROM word_draw "
-            . "LEFT JOIN team "
+            . "LEFT JOIN teams "
             . "ON team.team_id = word_draw.word_draw_team_id "
             . "LEFT JOIN player "
-            . "ON player.player_team_id = team.team_id "
+            . "ON player.team_id = teams.team_id "
             . "WHERE player.player_id = " . $player_id;
         $words = $this->db->getUniqueValueFromDb2($sql);
         if ($words == null) {

@@ -1,8 +1,8 @@
-CREATE TABLE IF NOT EXISTS team (
-    team_id INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-    team_name VARCHAR(50) NOT NULL,
-    team_order_id INT(10) NOT NULL,
-    PRIMARY KEY (team_id)
+CREATE TABLE IF NOT EXISTS teams (
+    id INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+    name VARCHAR(50) NOT NULL,
+    order_id INT(10) NOT NULL,
+    PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
 CREATE TABLE IF NOT EXISTS word_draw (
@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS word_draw (
     word_draw_value JSON NOT NULL,
     word_draw_team_id INT(10) UNSIGNED NOT NULL,
     PRIMARY KEY (word_draw_id),
-    FOREIGN KEY (word_draw_team_id) REFERENCES team (team_id)
+    FOREIGN KEY (word_draw_team_id) REFERENCES teams (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 /*
 CREATE TABLE IF NOT EXISTS turn
@@ -58,5 +58,5 @@ CREATE TABLE IF NOT EXISTS token
     PRIMARY KEY (token_turn_id, token_team_id, token_type_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 */
-ALTER TABLE `player` ADD `player_team_id` INT(10) UNSIGNED NOT NULL;
-ALTER TABLE `player` ADD CONSTRAINT fk_player_team_id FOREIGN KEY (player_team_id) REFERENCES team (team_id);
+ALTER TABLE `player` ADD `team_id` INT(10) UNSIGNED NOT NULL;
+ALTER TABLE `player` ADD CONSTRAINT fk_player_team_id FOREIGN KEY (team_id) REFERENCES teams (id);

@@ -13,7 +13,7 @@ class PlayerRepository
     {
         // Create players
         // Note: if you added some extra field on "player" table in the database (dbmodel.sql), you can initialize it there.
-        $sql = "INSERT INTO player (player_id, player_color, player_canal, player_name, player_avatar, player_team_id) VALUES ";
+        $sql = "INSERT INTO player (player_id, player_color, player_canal, player_name, player_avatar, team_id) VALUES ";
         $values = array();
         $index = 0;
         foreach ($players as $player_id => $player) {
@@ -28,7 +28,7 @@ class PlayerRepository
 
     public function getPlayers(): array
     {
-        $sql = "SELECT player_id id, player_name name, player_score score, player_team_id team_id FROM player ";
+        $sql = "SELECT player_id id, player_name name, player_score score, team_id FROM player ";
         return $this->db->getCollectionFromDb2($sql);
     }
 }

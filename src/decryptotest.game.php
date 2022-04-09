@@ -63,7 +63,7 @@ class DecryptoTest extends Table
 
         // Get information about players
         // Note: you can retrieve some extra field you added for "player" table in "dbmodel.sql" if you need it.
-        $sql = "SELECT player_id id, player_score score, player_team_id team_id FROM player ";
+        $sql = "SELECT player_id id, player_score score, team_id team_id FROM player ";
         $result['players'] = self::getCollectionFromDb($sql);
 
         return $result;

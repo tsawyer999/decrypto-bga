@@ -13,10 +13,10 @@ class TeamRepository
 
     public function saveTeam(Team $team): void
     {
-        $sql = "INSERT INTO team "
+        $sql = "INSERT INTO teams "
             . "("
-            . "team_name, "
-            . "team_order_id "
+            . "name, "
+            . "order_id "
             . ") VALUES ("
             . "'" . $team->name . "',"
             . $team->orderId
@@ -28,16 +28,16 @@ class TeamRepository
     public function getTeams(): array
     {
         $sql = "SELECT "
-            . "team.team_id id, "
-            . "team.team_name name, "
-            . "team.team_order_id order_id, "
+            . "teams.id, "
+            . "teams.name, "
+            . "teams.order_id, "
             . "GROUP_CONCAT(player.player_id) AS player_ids, "
             . "1 AS token_success, "
             . "1 AS token_fail "
-            . "FROM team "
+            . "FROM teams "
             . "LEFT JOIN player "
-            . "ON player.player_team_id = team.team_id "
-            . "GROUP BY team.team_id";
+            . "ON player.team_id = teams.id "
+            . "GROUP BY teams.id";
         $teams = $this->db->getObjectListFromDd2($sql);
 
         return $this->convertTeamsRecordToModels($teams);
@@ -59,16 +59,16 @@ class TeamRepository
     }
 
     public function changeTeamName(int $teamId, string $teamName): void {
-        $sql = "UPDATE team SET team_name='$teamName' WHERE team_id='$teamId'";
+        $sql = "UPDATE teams SET name='$teamName' WHERE id='$teamId'";
         $this->db->dbQuery2($sql);
     }
 
     public function switchTeam(int $playerId): int {
-        $sql = "SELECT player_team_id FROM player WHERE player_id='$playerId'";
+        $sql = "SELECT team_id FROM player WHERE player_id='$playerId'";
         $teamId = $this->db->getUniqueValueFromDb2($sql);
         $teamId = $teamId == 1 ? 2 : 1;
 
-        $sql = "UPDATE player SET player_team_id='$teamId' WHERE player_id='$playerId'";
+        $sql = "UPDATE player SET team_id='$teamId' WHERE player_id='$playerId'";
         $this->db->dbQuery2($sql);
 
         return $teamId;
