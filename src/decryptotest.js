@@ -1,41 +1,41 @@
-const templates = function(format_block) {
+const templates = function(that) {
     return {
         getTokens(team) {
-            return format_block('jstpl_tokens', {
+            return that.format_block('jstpl_tokens', {
                 teamId: team.id,
                 teamName: team.name
             });
         },
         getSuccessToken() {
-            return format_block('jstpl_token_success', {})
+            return that.format_block('jstpl_token_success', {})
         },
         getFailToken() {
-            return format_block('jstpl_token_fail', {})
+            return that.format_block('jstpl_token_fail', {})
         },
         getGiveHint(index, code) {
-            return format_block('jstpl_give_hint', {
+            return that.format_block('jstpl_give_hint', {
                 id: index,
                 code: code
             });
         },
         getCode(code) {
-            return format_block('jstpl_code', {
+            return that.format_block('jstpl_code', {
                 code: code.join('-')
             });
         },
         getWord(word) {
-            return format_block('jstpl_word', {
+            return that.format_block('jstpl_word', {
                 word: word
             });
         },
         getTeam(team) {
-            return format_block('jstpl_team', {
+            return that.format_block('jstpl_team', {
                 id: team.id,
                 name: team.name
             });
         },
         getTeamMember(player) {
-            return format_block('jstpl_team_member', {
+            return that.format_block('jstpl_team_member', {
                 id: player.id,
                 name: player.name
             });
@@ -80,12 +80,12 @@ const layout = function(that, dojo, templates) {
                 }
             }
         },
-        displayTeamsSetup(teams, players, onChangeTeamNameClick) {
+        displayTeamsSetup(teams, players) {
             for (const teamId of Object.keys(teams)) {
                 const team = teams[teamId];
                 const teamBlock = templates.getTeam(team);
                 dojo.place(teamBlock, 'teams');
-                dojo.connect(document.getElementById(`changeTeamName${team.id}Button`), 'onclick', () => onChangeTeamNameClick(team.id));
+                dojo.connect(document.getElementById(`changeTeamName${team.id}Button`), 'onclick', that.subscribeChangeTeamNameClick(team.id));
 
                 this.displayPlayersByTeams(team, players);
             }
@@ -115,13 +115,14 @@ const teamSetup = function(that, dojo, layout) {
             that.addActionButton('switchBtn', _("SwitchTeam"), this.onSwitchTeamClick);
             that.addActionButton('readyBtn', _("Ready"), this.onClickCompleteTeamSetupButton);
 
-            layout.displayTeamsSetup(args.teams, args.players, this.onChangeTeamNameClick);
+            layout.displayTeamsSetup(args.teams, args.players);
         },
-        leaving() {
+        leaving(stateName) {
         },
-        updateActionButtons() {
+        updateActionButtons(stateName, args) {
         },
         onSwitchTeamClick() {
+            console.log('onSwitchTeamClick');
             if (!that.checkAction('switchTeam', true)) {
                 return;
             }
@@ -132,25 +133,6 @@ const teamSetup = function(that, dojo, layout) {
                 return;
             }
             that.doAction("completeTeamSetup", {});
-        },
-        onChangeTeamNameClick(teamId) {
-            if (!that.checkAction('changeTeamName', true)) {
-                return;
-            }
-
-            const textboxId = `teamName${teamId}`;
-            const teamNameTextbox = document.getElementById(textboxId);
-            if (teamNameTextbox) {
-                const teamName = teamNameTextbox.value;
-                teamNameTextbox.value = '';
-
-                that.doAction("changeTeamName", {
-                    teamId : teamId,
-                    name: teamName
-                });
-            } else {
-                throw `textbox with id [${textboxId}] not found`;
-            }
         },
     };
 };
@@ -172,11 +154,11 @@ const giveHints = function(that, dojo, layout) {
             layout.displayCodeCard(code);
             layout.displayGiveHints(code);
 
-            that.addActionButton('giveHintsBtn', _("Give hints"), this.onGiveHintsClick);
+            addActionButton('giveHintsBtn', _("Give hints"), 'onGiveHintsClick');
         },
-        leaving() {
+        leaving(stateName) {
         },
-        updateActionButtons() {
+        updateActionButtons(stateName, args) {
         },
         onGiveHintsClick() {
             console.log('onGiveHintsClick');
@@ -204,42 +186,10 @@ const guessHints = function(that, dojo, layout) {
             dojo.style('giveHintsUi', 'display', 'none');
             dojo.style('guessHintsUi', 'display', 'flex');
         },
-        leaving() {
+        leaving(stateName) {
         },
-        updateActionButtons() {
+        updateActionButtons(stateName, args) {
         },
-    };
-};
-
-const notif_changeteamName = function(that) {
-    return function(notification) {
-        const teamId = notification.args.teamId;
-        const teamName = notification.args.teamName;
-
-        const labelId = `teamNameLabel${teamId}`;
-        const teamNameLabel = document.getElementById(labelId);
-        if (teamNameLabel) {
-            teamNameLabel.innerText = teamName;
-        } else {
-            throw `label with id [${labelId}] not found`;
-        }
-
-    };
-};
-
-const notif_completeTeamSetup = function(that) {
-    return function(notification) {
-        console.log('onCompleteTeamSetup', notification);
-    };
-};
-
-const notif_switchTeam = function(that) {
-    return function(notification) {
-        console.log('onSwitchTeam', notification);
-        const sourceId = `teamMember${notification.args.playerId}`;
-        const targetId = `teamMembers${notification.args.teamId}`;
-
-        that.slideToObject(sourceId, targetId).play();
     };
 };
 
@@ -254,7 +204,7 @@ define(
         return declare("bgagame.decryptotest", ebg.core.gamegui, {
             that: this,
             constructor() {
-                const t = templates(this.format_block);
+                const t = templates(this);
                 const l = layout(this, dojo, t);
 
                 this.states = {
@@ -262,20 +212,12 @@ define(
                     giveHints: giveHints(this, dojo, l),
                     guessHints: guessHints(this, dojo, l)
                 }
-
-                this.notifications = {
-                    changeTeamName: notif_changeteamName(this),
-                    completeTeamSetup: notif_completeTeamSetup(this),
-                    switchTeam: notif_switchTeam(this)
-                }
             },
-
             setup(gamedatas) {
                 console.log("Starting game setup", gamedatas);
                 this.setupNotifications();
                 console.log("Ending game setup");
             },
-
             onEnteringState(stateName, args) {
                 console.log("Entering state [" + stateName + "]");
                 if (this.states[stateName]) {
@@ -284,41 +226,85 @@ define(
                     console.error(`entering state [${stateName}] is not managed`)
                 }
             },
-
             onLeavingState(stateName) {
                 console.log("Leaving state [" + stateName + "]");
                 if (this.states[stateName]) {
-                    this.states[stateName].leaving();
+                    this.states[stateName].leaving(stateName);
                 } else {
                     console.error(`leaving state [${stateName}] is not managed`)
                 }
             },
-
             onUpdateActionButtons(stateName, args) {
-                console.log("Update action buttons with state [" + stateName + "]");
-                if (this.states[stateName]) {
-                    this.states[stateName].updateActionButtons();
-                } else {
-                    console.error(`update action buttons with state [${stateName}] is not managed`)
+                console.log('onUpdateActionButtons: '+stateName);
+
+                if ( this.isCurrentPlayerActive() ) {
+                    console.log('onUpdateActionButtons.isCurrentPlayerActive');
+                    if (this.states[stateName]) {
+                        this.states[stateName].updateActionButtons(stateName, args);
+                    } else {
+                        console.error(`leaving state [${stateName}] is not managed`)
+                    }
                 }
             },
+            subscribeChangeTeamNameClick(teamId) {
+                const fn = this.onChangeTeamNameClick.bind(this);
+                return function () {
+                    fn(teamId);
+                };
+            },
+            onChangeTeamNameClick(teamId) {
+                console.log('onChangeTeamNameClick', teamId);
+                if (!this.checkAction('changeTeamName', true)) {
+                    return;
+                }
 
+                const textboxId = `teamName${teamId}`;
+                const teamNameTextbox = document.getElementById(textboxId);
+                if (teamNameTextbox) {
+                    const teamName = teamNameTextbox.value;
+                    teamNameTextbox.value = '';
+
+                    this.doAction("changeTeamName", {
+                        teamId : teamId,
+                        name: teamName
+                    });
+                } else {
+                    throw `textbox with id [${textboxId}] not found`;
+                }
+            },
             doAction(actionName, payLoad) {
                 this.ajaxcall(`/${this.game_name}/${this.game_name}/${actionName}.html`, payLoad,
                     this,
-                    function (result) {
-                        console.log(`action [${actionName}] success with result ${result}`);
-                    },
-                    function (error) {
-                        console.log(`action [${actionName}] fails with error ${error}`);
-                    }
+                    function (result) {},
+                    function (is_error) {}
                 );
             },
-
             setupNotifications() {
-                for (let notificationName in this.notifications) {
-                    dojo.subscribe(notificationName, this, this.notifications[notificationName]);
+                dojo.subscribe('changeTeamName', this, "notif_changeteamName");
+                dojo.subscribe('completeTeamSetup', this, "notif_completeTeamSetup");
+                dojo.subscribe('switchTeam', this, "notif_switchTeam");
+            },
+            notif_changeteamName(notification) {
+                const teamId = notification.args.teamId;
+                const teamName = notification.args.teamName;
+
+                const labelId = `teamNameLabel${teamId}`;
+                const teamNameLabel = document.getElementById(labelId);
+                if (teamNameLabel) {
+                    teamNameLabel.innerText = teamName;
+                } else {
+                    throw `label with id [${labelId}] not found`;
                 }
+            },
+            notif_completeTeamSetup(notification) {
+                console.log('onCompleteTeamSetup', notification);
+            },
+            notif_switchTeam(notification) {
+                console.log('onSwitchTeam', notification);
+                const sourceId = `teamMember${notification.args.playerId}`;
+                const targetId = `teamMembers${notification.args.teamId}`;
+
+                this.slideToObject(sourceId, targetId).play();
             }
         });
     }
