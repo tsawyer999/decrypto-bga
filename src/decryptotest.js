@@ -154,7 +154,7 @@ const giveHints = function(that, dojo, layout) {
             layout.displayCodeCard(code);
             layout.displayGiveHints(code);
 
-            addActionButton('giveHintsBtn', _("Give hints"), 'onGiveHintsClick');
+            that.addActionButton('giveHintsBtn', _("Give hints"), this.onGiveHintsClick);
         },
         leaving(stateName) {
         },
