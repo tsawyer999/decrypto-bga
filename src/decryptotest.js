@@ -162,16 +162,19 @@ const giveHints = function(that, dojo, layout) {
         },
         onGiveHintsClick() {
             console.log('onGiveHintsClick');
-            if (!this.checkAction('giveHints', true)) {
+            if (!that.checkAction('giveHints', true)) {
                 return;
             }
             const inputs = document.querySelectorAll(".hint input");
-            console.log(inputs);
+
             let hints = [];
             for (const input of inputs) {
-                hints.push({ id: input.id, value: input.value });
+                hints.push({
+                    id: input.id,
+                    value: input.value
+                });
             }
-            const payload = {hints: JSON.stringify(hints)};
+            const payload = {hints};
             console.log({payload});
             this.doAction("giveHints", payload);
         }

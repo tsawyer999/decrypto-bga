@@ -4,17 +4,17 @@ require_once(APP_GAMEMODULE_PATH.'module/table/table.game.php');
 
 require_once('models/team.model.php');
 
-require_once('repositories/code.repository.php');
+require_once('repositories/game.repository.php');
 require_once('repositories/player.repository.php');
 require_once('repositories/team.repository.php');
 
-require_once('services/code.service.php');
+require_once('services/game.service.php');
 require_once('services/player.service.php');
 require_once('services/team.service.php');
 
 class DecryptoTest extends Table
 {
-    private CodeService $codeService;
+    private GameService $gameService;
     private PlayerService $playerService;
     private TeamService $teamService;
 
@@ -25,8 +25,8 @@ class DecryptoTest extends Table
         $teamRepository = new TeamRepository($this);
         $this->teamService = new TeamService($teamRepository);
 
-        $codeRepository = new CodeRepository($this);
-        $this->codeService = new CodeService($codeRepository, $teamRepository);
+        $gameRepository = new GameRepository($this);
+        $this->gameService = new GameService($gameRepository, $teamRepository);
 
         $playerRepository = new PlayerRepository($this);
         $this->playerService = new PlayerService($playerRepository);
@@ -76,27 +76,12 @@ class DecryptoTest extends Table
         );
     }
 
-    /*
-        getGameProgression:
-
-        Compute and return the current game progression.
-        The number returned must be an integer beween 0 (=the game just started) and
-        100 (= the game is finished or almost finished).
-
-        This method is called each time we are in a game state with the "updateGameProgression" property set to true
-        (see states.inc.php)
-    */
     function getGameProgression()
     {
         // TODO: compute and return the game progression
 
         return 0;
     }
-
-
-//////////////////////////////////////////////////////////////////////////////
-//////////// Utility functions
-////////////
 
     function getCollectionFromDb2($sql)
     {
@@ -117,15 +102,6 @@ class DecryptoTest extends Table
     {
         return self::getObjectListFromDB($sql);
     }
-
-//////////////////////////////////////////////////////////////////////////////
-//////////// Player actions
-////////////
-
-    /*
-        Each time a player is doing some game action, one of the methods below is called.
-        (note: each method below must match an input method in decryptotest.action.php)
-    */
 
     function changeTeamName($teamId, $teamName) {
         $this->teamService->changeTeamName($teamId, $teamName);
@@ -156,11 +132,9 @@ class DecryptoTest extends Table
 
     function giveHints($hints)
     {
-    }
 
-//////////////////////////////////////////////////////////////////////////////
-//////////// Game state arguments
-////////////
+        self::dump('name_of_variable', $hints);
+    }
 
     function argTeamSetup()
     {
@@ -179,71 +153,25 @@ class DecryptoTest extends Table
         $current_player_id = self::getCurrentPlayerId();
 
         $result['teams'] = $this->teamService->getTeams();
-        $result['words'] = $this->codeService->getWordsForPlayer($current_player_id);
+        $result['words'] = $this->gameService->getWordsForPlayer($current_player_id);
         $result['code'] = [1, 4, 2];
 
         return $result;
     }
 
-    /*
-        Here, you can create methods defined as "game state arguments" (see "args" property in states.inc.php).
-        These methods function is to return some additional information that is specific to the current
-        game state.
-    */
-
-    /*
-
-    Example for game state "MyGameState":
-
-    function argMyGameState()
-    {
-        // Get some values from the current game situation in database...
-
-        // return values:
-        return array(
-            'variable1' => $value1,
-            'variable2' => $value2,
-            ...
-        );
-    }
-    */
-
-//////////////////////////////////////////////////////////////////////////////
-//////////// Game state actions
-////////////
-
-    /*
-        Here, you can create methods defined as "game state actions" (see "action" property in states.inc.php).
-        The action method of state X is called everytime the current game state is set to X.
-    */
-
-    /*
-
-    Example for game state "MyGameState":
-
-    function stMyGameState()
-    {
-        // Do some stuff ...
-
-        // (very often) go to another gamestate
-        $this->gamestate->nextState( 'some_gamestate_transition' );
-    }
-    */
-
     function stBeginGame()
     {
         $sequence_length = 3;
         $param_number_words = 4;
-        $this->codeService->setWordsForAllTeams($param_number_words);
-        $codes = $this->codeService->generateAllCodes($sequence_length, $param_number_words);
-        $this->codeService->saveCodes($codes);
 
-        $this->gamestate->nextState( 'beginTurn' );
+        $this->gameService->startGame($sequence_length, $param_number_words);
+
+        $this->gamestate->nextState('beginTurn');
     }
 
     function stBeginTurn()
     {
-        $this->gamestate->nextState( "giveHints" );
+        $this->gamestate->nextState("giveHints");
     }
 
     function stGiveHints() {
@@ -263,23 +191,6 @@ class DecryptoTest extends Table
         }
 //        $this->gamestate->setAllPlayersMultiactive();
     }
-
-//////////////////////////////////////////////////////////////////////////////
-//////////// Zombie
-////////////
-
-    /*
-        zombieTurn:
-
-        This method is called each time it is the turn of a player who has quit the game (= "zombie" player).
-        You can do whatever you want in order to make sure the turn of this player ends appropriately
-        (ex: pass).
-
-        Important: your zombie code will be called when the player leaves the game. This action is triggered
-        from the main site and propagated to the gameserver from a server, not from a browser.
-        As a consequence, there is no current player associated to this action. In your zombieTurn function,
-        you must _never_ use getCurrentPlayerId() or getCurrentPlayerName(), otherwise it will fail with a "Not logged" error message.
-    */
 
     function zombieTurn($state, $active_player)
     {
@@ -305,44 +216,7 @@ class DecryptoTest extends Table
         throw new feException("Zombie mode not supported at this game state: ".$statename);
     }
 
-///////////////////////////////////////////////////////////////////////////////////:
-////////// DB upgrade
-//////////
-
-    /*
-        upgradeTableDb:
-
-        You don't have to care about this until your game has been published on BGA.
-        Once your game is on BGA, this method is called everytime the system detects a game running with your old
-        Database scheme.
-        In this case, if you change your Database scheme, you just have to apply the needed changes in order to
-        update the game database and allow the game to continue to run with your new version.
-
-    */
-
     function upgradeTableDb($from_version)
     {
-        // $from_version is the current version of this game database, in numerical form.
-        // For example, if the game was running with a release of your game named "140430-1345",
-        // $from_version is equal to 1404301345
-
-        // Example:
-//        if( $from_version <= 1404301345 )
-//        {
-//            // ! important ! Use DBPREFIX_<table_name> for all tables
-//
-//            $sql = "ALTER TABLE DBPREFIX_xxxxxxx ....";
-//            self::applyDbUpgradeToAllDB( $sql );
-//        }
-//        if( $from_version <= 1405061421 )
-//        {
-//            // ! important ! Use DBPREFIX_<table_name> for all tables
-//
-//            $sql = "CREATE TABLE DBPREFIX_xxxxxxx ....";
-//            self::applyDbUpgradeToAllDB( $sql );
-//        }
-//        // Please add your future database scheme changes here
-//
-//
     }
 }

@@ -1,25 +1,43 @@
 <?php
 
-require_once(__DIR__ . "/../repositories/code.repository.php");
+require_once(__DIR__ . "/../repositories/game.repository.php");
 require_once(__DIR__ . "/../models/dictionary-random-picker.php");
 
-class CodeService
+class GameService
 {
-    private CodeRepository $codeRepository;
+    private GameRepository $gameRepository;
     private TeamRepository $teamRepository;
 
-    public function __construct(CodeRepository $codeRepository, TeamRepository $teamRepository)
+    public function __construct(GameRepository $gameRepository, TeamRepository $teamRepository)
     {
-        $this->codeRepository = $codeRepository;
+        $this->gameRepository = $gameRepository;
         $this->teamRepository = $teamRepository;
     }
 
-    public function saveCodes(array $codes): void
+    public function startGame(int $sequence_length, int $param_number_words)
     {
-        $this->codeRepository->saveCodes($codes);
+        $this->setWordsForAllTeams($param_number_words);
+        $this->setCodesForGame($sequence_length, $param_number_words);
+        $this->gameRepository->insertTurn(0, 0);
     }
 
-    public function generateAllCodes(int $sequence_length, int $param_number_words): array
+    public function getWordsForPlayer($player_id): array
+    {
+        return $this->gameRepository->getWordsForPlayer($player_id);
+    }
+
+    private function setCodesForGame($sequence_length, $param_number_words)
+    {
+        $codes = $this->generateAllCodes($sequence_length, $param_number_words);
+        $this->saveCodes($codes);
+    }
+
+    private function saveCodes(array $codes): void
+    {
+        $this->gameRepository->saveCodes($codes);
+    }
+
+    private function generateAllCodes(int $sequence_length, int $param_number_words): array
     {
         $availableItems = [];
 
@@ -61,14 +79,9 @@ class CodeService
         return $r;
     }
 
-    public function getWordsForPlayer($player_id): array
+    private function setWordsForAllTeams(int $param_number_words): void
     {
-        return $this->codeRepository->getWordsForPlayer($player_id);
-    }
-
-    public function setWordsForAllTeams(int $param_number_words): void
-    {
-        $words = $this->codeRepository->getWords();
+        $words = $this->gameRepository->getWords();
         $dictionary = new DictionaryRandomPicker($words);
 
         $teams = $this->teamRepository->getTeams();
@@ -80,7 +93,7 @@ class CodeService
                 $word = $dictionary->pick();
                 array_push($teamWords, $word);
             }
-            $this->codeRepository->saveWords($team->id, $teamWords);
+            $this->gameRepository->saveWords($team->id, $teamWords);
         }
     }
 }

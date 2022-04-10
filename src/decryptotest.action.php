@@ -62,8 +62,7 @@ class action_decryptotest extends APP_GameAction
     public function giveHints()
     {
         self::setAjaxMode();
-//        $hints = self::getArg( "hints", AT_json, true );
-        $hints = "";
+        $hints = self::getArg( "hints", AT_json, true );
         $this->game->giveHints($hints);
         self::ajaxResponse();
     }

@@ -12,16 +12,16 @@ CREATE TABLE IF NOT EXISTS word_draws (
     PRIMARY KEY (id),
     FOREIGN KEY (team_id) REFERENCES teams (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
-/*
-CREATE TABLE IF NOT EXISTS turn
+
+CREATE TABLE IF NOT EXISTS turns
 (
-    turn_id INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+    id INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+    round_number INT(10) UNSIGNED NOT NULL,
     turn_number INT(10) UNSIGNED NOT NULL,
-    turn_round_number INT(10) UNSIGNED NOT NULL,
-    PRIMARY KEY (turn_id),
-    CONSTRAINT uc_turn_number_round_number UNIQUE (turn_number, turn_round_number)
+    PRIMARY KEY (id),
+    CONSTRAINT uc_round_turn_number UNIQUE (round_number, turn_number)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
-*/
+
 CREATE TABLE IF NOT EXISTS codes
 (
     id INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,

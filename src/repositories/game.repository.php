@@ -1,7 +1,7 @@
 <?php
 require_once(__DIR__ . "/../data/words.php");
 
-class CodeRepository
+class GameRepository
 {
     private DecryptoTest $db;
 
@@ -51,6 +51,19 @@ class CodeRepository
             . ") VALUES ("
             . $teamId . ","
             . "'" . json_encode($words) . "'"
+            . ")";
+
+        $this->db->dbQuery2($sql);
+    }
+
+    public function insertTurn(int $round_number, int $turn_number)
+    {
+        $sql = "INSERT INTO turns ("
+            . "round_number, "
+            . "turn_number "
+            . ") VALUES ("
+            . $round_number . ","
+            . $turn_number
             . ")";
 
         $this->db->dbQuery2($sql);
