@@ -48,14 +48,21 @@ class TeamRepository
         $teams = [];
         foreach ($teamList as $t)
         {
-            $playerIds = explode(',', $t['player_ids']);
-            $team = new Team($t['id'], $t['name'], $t['order_id'], $playerIds);
-            $team->tokens->success = $t['token_success'];
-            $team->tokens->fail = $t['token_fail'];
+            $team = $this->convertTeamsRecordToModel($t);
             array_push($teams, $team);
         }
 
         return $teams;
+    }
+
+    private function convertTeamsRecordToModel($t): Team
+    {
+        $playerIds = explode(',', $t['player_ids']);
+        $team = new Team($t['id'], $t['name'], $t['order_id'], $playerIds);
+        $team->tokens->success = $t['token_success'];
+        $team->tokens->fail = $t['token_fail'];
+
+        return $team;
     }
 
     public function changeTeamName(int $teamId, string $teamName): void {

@@ -2,6 +2,7 @@
 
 require_once(__DIR__ . "/../repositories/game.repository.php");
 require_once(__DIR__ . "/../models/dictionary-random-picker.php");
+require_once(__DIR__ . "/../models/turn.model.php");
 
 class GameService
 {
@@ -18,7 +19,36 @@ class GameService
     {
         $this->setWordsForAllTeams($param_number_words);
         $this->setCodesForGame($sequence_length, $param_number_words);
-        $this->gameRepository->insertTurn(0, 0);
+
+        $turn = new Turn(0, 0);
+        $this->gameRepository->saveTurn($turn);
+    }
+
+    public function moveToNextTurn(): void
+    {
+        $currentTurn = $this->gameRepository->getCurrentTurn();
+        $teams = $this->teamRepository->getTeams();
+
+        $nextTurn = $this->calculateNextTurn($currentTurn, $teams);
+        $this->gameRepository->saveTurn($nextTurn);
+    }
+
+    private function calculateNextTurn(Turn $currentTurn, $teams): Turn
+    {
+        $round_number = $currentTurn->round_number;
+        $turn_number = $currentTurn->turn_number;
+
+        if ($turn_number + 1 == count($teams))
+        {
+            $round_number++;
+            $turn_number = 0;
+        }
+        else
+        {
+            $turn_number++;
+        }
+
+        return new Turn($round_number, $turn_number);
     }
 
     public function getWordsForPlayer($player_id): array
@@ -95,5 +125,14 @@ class GameService
             }
             $this->gameRepository->saveWords($team->id, $teamWords);
         }
+    }
+
+    public function getPlayerIdForGiveHints(): int
+    {
+        $turn = $this->gameRepository->getCurrentTurn();
+        $teams = $this->teamRepository->getTeams();
+
+        $numberOfPlayers = count($teams[$turn->turn_number]->playerIds);
+        return $teams[$turn->turn_number]->playerIds[$turn->round_number % $numberOfPlayers];
     }
 }

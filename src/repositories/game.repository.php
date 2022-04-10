@@ -1,5 +1,6 @@
 <?php
 require_once(__DIR__ . "/../data/words.php");
+require_once(__DIR__ . "/../models/turn.model.php");
 
 class GameRepository
 {
@@ -56,16 +57,40 @@ class GameRepository
         $this->db->dbQuery2($sql);
     }
 
-    public function insertTurn(int $round_number, int $turn_number)
+    public function saveTurn(Turn $turn): void
     {
         $sql = "INSERT INTO turns ("
             . "round_number, "
             . "turn_number "
             . ") VALUES ("
-            . $round_number . ","
-            . $turn_number
+            . $turn->round_number . ","
+            . $turn->turn_number
             . ")";
 
         $this->db->dbQuery2($sql);
+    }
+
+    public function getCurrentTurn(): Turn
+    {
+        $sql = "SELECT "
+            . "turns.id, "
+            . "turns.round_number, "
+            . "turns.turn_number "
+            . "FROM turns "
+            . "ORDER BY "
+            . "turns.round_number DESC, "
+            . "turns.turn_number DESC "
+            . "LIMIT 1";
+
+        $turn = $this->db->getObjectFromDb2($sql);
+        return $this->convert($turn);
+    }
+
+    private function convert(array $t): Turn
+    {
+        $turn = new Turn($t['round_number'], $t['turn_number']);
+        $turn->id = $t['id'];
+
+        return $turn;
     }
 }

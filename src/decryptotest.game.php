@@ -93,6 +93,11 @@ class DecryptoTest extends Table
         return self::DbQuery($sql);
     }
 
+    function getObjectFromDb2($sql)
+    {
+        return self::getObjectFromDB($sql);
+    }
+
     function getUniqueValueFromDb2($sql)
     {
         return self::getUniqueValueFromDB($sql);
@@ -132,8 +137,12 @@ class DecryptoTest extends Table
 
     function giveHints($hints)
     {
-
         self::dump('name_of_variable', $hints);
+    }
+
+    function logMessage($message): void
+    {
+        self::debug($message);
     }
 
     function argTeamSetup()
@@ -161,6 +170,7 @@ class DecryptoTest extends Table
 
     function stBeginGame()
     {
+        $this->logMessage("stBeginGame");
         $sequence_length = 3;
         $param_number_words = 4;
 
@@ -171,11 +181,18 @@ class DecryptoTest extends Table
 
     function stBeginTurn()
     {
+        $this->logMessage("stBeginTurn");
+        $this->gameService->moveToNextTurn();
+
         $this->gamestate->nextState("giveHints");
     }
 
     function stGiveHints() {
-        $this->gamestate->setAllPlayersMultiactive();
+        $playerId = $this->gameService->getPlayerIdForGiveHints();
+
+        self::dump('=== name_of_variable ===', $playerId);
+
+        $this->gamestate->changeActivePlayer($playerId);
     }
 
     function stGuessHints() {
@@ -184,20 +201,23 @@ class DecryptoTest extends Table
 
     function stEndTurn()
     {
-        if (true) {
+        if (true)
+        {
             $this->gamestate->nextState( "newTurn" );
-        } else {
+        } else
+        {
             $this->gamestate->nextState( "gameEnd" );
         }
-//        $this->gamestate->setAllPlayersMultiactive();
     }
 
     function zombieTurn($state, $active_player)
     {
         $statename = $state['name'];
 
-        if ($state['type'] === "activeplayer") {
-            switch ($statename) {
+        if ($state['type'] === "activeplayer")
+        {
+            switch ($statename)
+            {
                 default:
                     $this->gamestate->nextState("zombiePass");
                     break;
@@ -206,7 +226,8 @@ class DecryptoTest extends Table
             return;
         }
 
-        if ($state['type'] === "multipleactiveplayer") {
+        if ($state['type'] === "multipleactiveplayer")
+        {
             // Make sure player is in a non blocking status for role turn
             $this->gamestate->setPlayerNonMultiactive($active_player, '');
 
