@@ -3,6 +3,7 @@
 require_once(__DIR__ . "/../repositories/game.repository.php");
 require_once(__DIR__ . "/../models/dictionary-random-picker.php");
 require_once(__DIR__ . "/../models/turn.model.php");
+require_once(__DIR__ . "/../models/hint.model.php");
 
 class GameService
 {
@@ -134,5 +135,17 @@ class GameService
 
         $numberOfPlayers = count($teams[$turn->turn_number]->playerIds);
         return $teams[$turn->turn_number]->playerIds[$turn->round_number % $numberOfPlayers];
+    }
+
+    public function giveHints(int $playerId, array $hints): void
+    {
+        $currentTurn = $this->gameRepository->getCurrentTurn();
+
+        $hint = new Hint();
+        $hint->player_id = $playerId;
+        $hint->turn_id = $currentTurn->id;
+        $hint->value = $hints;
+
+        $this->gameRepository->saveHints($hint);
     }
 }

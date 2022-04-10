@@ -137,7 +137,8 @@ class DecryptoTest extends Table
 
     function giveHints($hints)
     {
-        self::dump('name_of_variable', $hints);
+        $player_id = self::getCurrentPlayerId();
+        $this->gameService->giveHints($player_id, $hints);
     }
 
     function logMessage($message): void
@@ -185,14 +186,13 @@ class DecryptoTest extends Table
         $this->gameService->moveToNextTurn();
 
         $this->gamestate->nextState("giveHints");
+
+//        $playerId = $this->gameService->getPlayerIdForGiveHints();
+//        $this->gamestate->changeActivePlayer($playerId);
     }
 
     function stGiveHints() {
-        $playerId = $this->gameService->getPlayerIdForGiveHints();
-
-        self::dump('=== name_of_variable ===', $playerId);
-
-        $this->gamestate->changeActivePlayer($playerId);
+        $this->gamestate->setAllPlayersMultiactive();
     }
 
     function stGuessHints() {

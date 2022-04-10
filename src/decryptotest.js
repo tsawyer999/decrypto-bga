@@ -169,12 +169,9 @@ const giveHints = function(that, dojo, layout) {
 
             let hints = [];
             for (const input of inputs) {
-                hints.push({
-                    id: input.id,
-                    value: input.value
-                });
+                hints.push(input.value);
             }
-            const payload = {hints};
+            const payload = {hints: JSON.stringify(hints)};
             console.log({payload});
             this.doAction("giveHints", payload);
         }

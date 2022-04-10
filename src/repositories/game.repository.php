@@ -13,11 +13,12 @@ class GameRepository
 
     public function saveCodes(array $codes): void
     {
-        $sql = "INSERT INTO codes (value) VALUES ";
+        $sql = "INSERT INTO codes (id, value) VALUES ";
         $values = array();
-
+        $id = 0;
         foreach ($codes as $code) {
-            $values[] = "('". json_encode($code)."')";
+            $id++;
+            $values[] = "(". $id .",'". json_encode($code)."')";
         }
         $sql .= implode(',', $values);
         $this->db->DbQuery2($sql);
@@ -92,5 +93,20 @@ class GameRepository
         $turn->id = $t['id'];
 
         return $turn;
+    }
+
+    public function saveHints(Hint $hint)
+    {
+        $sql = "INSERT INTO hints ("
+            . "turn_id,"
+            . "player_id,"
+            . "value"
+            . ") VALUES ("
+            . $hint->turn_id . ","
+            . $hint->player_id . ","
+            . "'" . json_encode($hint->value) . "'"
+            . ")";
+
+        $this->db->dbQuery2($sql);
     }
 }

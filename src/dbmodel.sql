@@ -24,22 +24,23 @@ CREATE TABLE IF NOT EXISTS turns
 
 CREATE TABLE IF NOT EXISTS codes
 (
-    id INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+    id INT(10) UNSIGNED NOT NULL,
     value JSON NOT NULL,
     PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
-/*
-CREATE TABLE IF NOT EXISTS hint
+CREATE TABLE IF NOT EXISTS hints
 (
-    hint_id INT(10) UNSIGNED NOT NULL,
-    hint_code_id INT(10) UNSIGNED NOT NULL,
-    hint_value VARCHAR(50) NOT NULL,
-    hint_player_id INT(10) UNSIGNED NOT NULL,
-    PRIMARY KEY (hint_id),
-    FOREIGN KEY (hint_code_id) REFERENCES code (code_id),
-    FOREIGN KEY (hint_player_id) REFERENCES player (player_id)
+    id INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+    turn_id INT(10) UNSIGNED NOT NULL,
+    player_id INT(10) UNSIGNED NOT NULL,
+    value JSON NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (turn_id) REFERENCES turns (id),
+    FOREIGN KEY (player_id) REFERENCES player (player_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
+
+/*
 
 CREATE TABLE IF NOT EXISTS guess
 (
