@@ -139,13 +139,20 @@ class GameService
 
     public function giveHints(int $playerId, array $hints): void
     {
-        $currentTurn = $this->gameRepository->getCurrentTurn();
+        $turn = $this->gameRepository->getCurrentTurn();
 
         $hint = new Hint();
         $hint->player_id = $playerId;
-        $hint->turn_id = $currentTurn->id;
+        $hint->turn_id = $turn->id;
         $hint->value = $hints;
 
         $this->gameRepository->saveHints($hint);
+    }
+
+    public function getHintsForCurrentTurn(): array
+    {
+        $turn = $this->gameRepository->getCurrentTurn();
+
+        return $this->gameRepository->getHints($turn->id);
     }
 }
