@@ -34,7 +34,7 @@ $machinestates = array(
         "name" => "giveHints",
         "description" => clienttranslate('${actplayer} must supply hints'),
         "descriptionmyturn" => clienttranslate('${you} must supply hints'),
-        "type" => "multipleactiveplayer",
+        "type" => "activeplayer",
         "possibleactions" => array("giveHints"),
         "args" => "argGiveHints",
         "action" => "stGiveHints",
@@ -46,6 +46,7 @@ $machinestates = array(
         "descriptionmyturn" => clienttranslate('${you} must guess hints!'),
         "type" => "multipleactiveplayer",
         "possibleactions" => array( "guessHints" ),
+        "args" => "argGuessHints",
         "action" => "stGuessHints",
         "transitions" => array("endTurn" => 60)
     ),

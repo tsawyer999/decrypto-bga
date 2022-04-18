@@ -181,6 +181,7 @@ const giveHints = function(that, dojo, layout) {
 const guessHints = function(that, dojo, layout) {
     return {
         entering(args) {
+            console.log("args ====>", args);
             dojo.style('teamSetupUi', 'display', 'none');
             dojo.style('boardUi', 'display', 'flex');
             dojo.style('giveHintsUi', 'display', 'none');
@@ -219,7 +220,7 @@ define(
                 console.log("Ending game setup");
             },
             onEnteringState(stateName, args) {
-                console.log("Entering state [" + stateName + "]");
+                console.log("Entering state [" + stateName + "]", args);
                 if (this.states[stateName]) {
                     this.states[stateName].entering(args.args);
                 } else {

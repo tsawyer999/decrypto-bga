@@ -84,10 +84,10 @@ class GameRepository
             . "LIMIT 1";
 
         $turn = $this->db->getObjectFromDb2($sql);
-        return $this->convert($turn);
+        return $this->convertTurnRecordToModel($turn);
     }
 
-    private function convert(array $t): Turn
+    private function convertTurnRecordToModel(array $t): Turn
     {
         $turn = new Turn($t['round_number'], $t['turn_number']);
         $turn->id = $t['id'];
@@ -108,5 +108,15 @@ class GameRepository
             . ")";
 
         $this->db->dbQuery2($sql);
+    }
+
+    public function getHints(int $turnId): array
+    {
+        $sql = "SELECT hints.value "
+            . "FROM hints "
+            . "WHERE hints.turn_id=" . $turnId;
+
+        $value = $this->db->getUniqueValueFromDb2($sql);
+        return json_decode($value);
     }
 }

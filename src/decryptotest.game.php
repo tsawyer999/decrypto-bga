@@ -64,6 +64,7 @@ class DecryptoTest extends Table
         // Get information about players
         // Note: you can retrieve some extra field you added for "player" table in "dbmodel.sql" if you need it.
         $sql = "SELECT player_id id, player_score score, team_id team_id FROM player ";
+
         $result['players'] = self::getCollectionFromDb($sql);
 
         return $result;
@@ -78,8 +79,6 @@ class DecryptoTest extends Table
 
     function getGameProgression()
     {
-        // TODO: compute and return the game progression
-
         return 0;
     }
 
@@ -139,6 +138,8 @@ class DecryptoTest extends Table
     {
         $player_id = self::getCurrentPlayerId();
         $this->gameService->giveHints($player_id, $hints);
+
+        $this->gamestate->nextState('guessHints');
     }
 
     function logMessage($message): void
@@ -159,12 +160,24 @@ class DecryptoTest extends Table
     function argGiveHints()
     {
         $result = [];
-
         $current_player_id = self::getCurrentPlayerId();
 
         $result['teams'] = $this->teamService->getTeams();
         $result['words'] = $this->gameService->getWordsForPlayer($current_player_id);
         $result['code'] = [1, 4, 2];
+
+        return $result;
+    }
+
+    function argGuessHints()
+    {
+        $result = [];
+        $current_player_id = self::getCurrentPlayerId();
+
+        $result['teams'] = $this->teamService->getTeams();
+        $result['words'] = $this->gameService->getWordsForPlayer($current_player_id);
+        $result['code'] = [1, 4, 2];
+        $result['hints'] = $this->gameService->getHintsForCurrentTurn();
 
         return $result;
     }
@@ -185,14 +198,13 @@ class DecryptoTest extends Table
         $this->logMessage("stBeginTurn");
         $this->gameService->moveToNextTurn();
 
-        $this->gamestate->nextState("giveHints");
+        $playerId = $this->gameService->getPlayerIdForGiveHints();
+        $this->gamestate->changeActivePlayer($playerId);
 
-//        $playerId = $this->gameService->getPlayerIdForGiveHints();
-//        $this->gamestate->changeActivePlayer($playerId);
+        $this->gamestate->nextState("giveHints");
     }
 
     function stGiveHints() {
-        $this->gamestate->setAllPlayersMultiactive();
     }
 
     function stGuessHints() {
@@ -235,9 +247,5 @@ class DecryptoTest extends Table
         }
 
         throw new feException("Zombie mode not supported at this game state: ".$statename);
-    }
-
-    function upgradeTableDb($from_version)
-    {
     }
 }
