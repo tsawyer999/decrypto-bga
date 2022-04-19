@@ -18,6 +18,19 @@ const templates = function(that) {
                 code: code
             });
         },
+        getGuessHint(hintIndex, hint) {
+            return that.format_block('jstpl_guess_hint', {
+                hintIndex: hintIndex,
+                hint: hint
+            });
+        },
+        getGuessSelector(hintIndex, selectorIndex) {
+            return that.format_block('jstpl_guess_selector_item', {
+                hintIndex: hintIndex,
+                selectorIndex: selectorIndex,
+                label: selectorIndex + 1
+            });
+        },
         getCode(code) {
             return that.format_block('jstpl_code', {
                 code: code.join('-')
@@ -53,7 +66,7 @@ const layout = function(that, dojo, templates) {
         },
         displayCodeCard(code) {
             const codeBlock = templates.getCode(code);
-            dojo.place(codeBlock, 'code');
+            dojo.place(codeBlock, 'codeSection');
         },
         displayGiveHints(code) {
             let i=0;
@@ -61,6 +74,20 @@ const layout = function(that, dojo, templates) {
                 const giveHintBlock = templates.getGiveHint(i, c);
                 dojo.place(giveHintBlock, 'giveHintsUi');
                 i++;
+            }
+        },
+        displayGuessHints(hints, wordsCount) {
+            let hintIndex=0;
+            for (const hint of hints) {
+                const guessHintBlockId = `guessSelector${hintIndex}`;
+                const guessHintBlock = templates.getGuessHint(hintIndex, hint);
+                dojo.place(guessHintBlock, 'guessHintsUi');
+                hintIndex++;
+
+                for (let j=0; j<wordsCount; j++) {
+                    const selectorBlock = templates.getGuessSelector(hintIndex, j);
+                    dojo.place(selectorBlock, guessHintBlockId);
+                }
             }
         },
         displayTokens(teams) {
@@ -181,11 +208,18 @@ const giveHints = function(that, dojo, layout) {
 const guessHints = function(that, dojo, layout) {
     return {
         entering(args) {
-            console.log("args ====>", args);
             dojo.style('teamSetupUi', 'display', 'none');
             dojo.style('boardUi', 'display', 'flex');
             dojo.style('giveHintsUi', 'display', 'none');
             dojo.style('guessHintsUi', 'display', 'flex');
+
+            const teams = args.teams;
+            const words = args.words;
+            const hints = args.hints;
+
+            layout.displayWords(words);
+            layout.displayTokens(teams);
+            layout.displayGuessHints(hints, words.length);
         },
         leaving(stateName) {
         },

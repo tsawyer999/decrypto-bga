@@ -8,7 +8,6 @@
     <div id="wordsSection"></div>
     <div id="codeSection">
         <div id="codeStack"></div>
-        <div id="code"></div>
     </div>
     <div id="tokensSection"></div>
 </div>
@@ -17,7 +16,6 @@
 </div>
 
 <div id="guessHintsUi">
-    <span>guess hints</span>
 </div>
 
 <script type="text/javascript">
@@ -38,6 +36,13 @@
         + '<input id="hint${id}" type="text" size="30" maxlength="30">'
         + '</div>'
 
+    let jstpl_guess_hint = '<div class="guess">'
+        + '<div class="guess-label">${hint}</div>'
+        + '<div id="guessSelector${hintIndex}" class="guess-selector"></div>'
+        + '</div>'
+
+    let jstpl_guess_selector_item = '<div id=${hintIndex}_${selectorIndex} class="guess-selector-item">${label}</div>';
+
     let jstpl_tokens = '<div>'
         + '<div>${teamName}</div>'
         + '<div id="tokens${teamId}" class="tokens"></div>'
@@ -47,7 +52,7 @@
 
     let jstpl_token_fail = '<div class="token token-fail"></div>';
 
-    let jstpl_code = '<div>${code}</div>';
+    let jstpl_code = '<div id="code"><div>${code}</div></div>';
 
 </script>
 

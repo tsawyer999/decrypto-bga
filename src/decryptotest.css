@@ -22,22 +22,61 @@
 }
 
 #giveHintsUi {
-    border: 1px solid blue;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
 }
 
+#guessHintsUi {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 250px;
+}
+
+.hint {
+    margin: 10px;
+}
+
 .hint label {
-    font-size: 50px
+    font-size: 50px;
 }
 
 .hint input {
-    font-size: 50px
+    font-size: 50px;
+}
+
+.guess {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    background-color: lightgray;
+    border: 1px black solid;
+    width: 750px;
+    padding: 10px;
+    margin: 10px;
+}
+
+.guess-label {
+    font-size: 50px;
+    width: 500px;
+}
+
+.guess-selector {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 250px;
+}
+
+.guess-selector-item {
+    font-size: 50px;
+    border: 1px solid black;
+    width: 50px;
+    text-align: center;
 }
 
 #boardUi {
-    border: 1px solid red;
     display: flex;
     flex-direction: row;
     justify-content: flex-start;

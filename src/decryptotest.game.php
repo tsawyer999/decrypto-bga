@@ -176,7 +176,6 @@ class DecryptoTest extends Table
 
         $result['teams'] = $this->teamService->getTeams();
         $result['words'] = $this->gameService->getWordsForPlayer($current_player_id);
-        $result['code'] = [1, 4, 2];
         $result['hints'] = $this->gameService->getHintsForCurrentTurn();
 
         return $result;
