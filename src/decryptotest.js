@@ -228,7 +228,7 @@ const guessHints = function(that, dojo, layout) {
     };
 };
 
-const notif_changeteamName = function(notification) {
+const onChangeteamName = function(notification) {
     const teamId = notification.args.teamId;
     const teamName = notification.args.teamName;
 
@@ -241,11 +241,7 @@ const notif_changeteamName = function(notification) {
     }
 };
 
-const notif_completeTeamSetup = function(notification) {
-    console.log('onCompleteTeamSetup', notification);
-};
-
-const notif_switchTeam = function (notification) {
+const onSwitchTeam = function (notification) {
     console.log('onSwitchTeam', notification);
     const player = document.getElementById(`teamMember${notification.args.playerId}`);
     const team = document.getElementById(`teamMembers${notification.args.teamId}`);
@@ -340,9 +336,8 @@ define(
                 );
             },
             setupNotifications() {
-                dojo.subscribe('changeTeamName', this, notif_changeteamName);
-                dojo.subscribe('completeTeamSetup', this, notif_completeTeamSetup);
-                dojo.subscribe('switchTeam', this, notif_switchTeam);
+                dojo.subscribe('onChangeTeamName', this, onChangeteamName);
+                dojo.subscribe('onSwitchTeam', this, onSwitchTeam);
             }
         });
     }

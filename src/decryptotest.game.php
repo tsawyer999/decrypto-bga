@@ -111,7 +111,7 @@ class DecryptoTest extends Table
         $this->teamService->changeTeamName($teamId, $teamName);
 
         $playerName = $this->getCurrentPlayerName();
-        self::notifyAllPlayers('changeTeamName', "$playerName change team $teamId name to $teamName", array(
+        self::notifyAllPlayers('onChangeTeamName', "$playerName change team $teamId name to $teamName", array(
             'teamId' => $teamId,
             'teamName' => $teamName
         ));
@@ -127,7 +127,7 @@ class DecryptoTest extends Table
         $teamId = $this->teamService->switchTeam($playerId);
 
         $playerName = $this->getCurrentPlayerName();
-        self::notifyAllPlayers('switchTeam', "$playerName switch to team $teamId", array(
+        self::notifyAllPlayers('onSwitchTeam', "$playerName switch to team $teamId", array(
             'playerId' => $playerId,
             'playerName' => $playerName,
             'teamId' => $teamId
