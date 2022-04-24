@@ -67,6 +67,16 @@ class action_decryptotest extends APP_GameAction
         self::ajaxResponse();
     }
 
+    public function changeGuessSelectorIndex()
+    {
+        self::setAjaxMode();
+        $hintIndex = self::getArg( "hintIndex", AT_posint, true );
+        $selectorIndex = self::getArg( "selectorIndex", AT_posint, true );
+
+        $this->game->changeGuessSelectorIndex($hintIndex, $selectorIndex);
+        self::ajaxResponse();
+    }
+
     /*
 
     Example:

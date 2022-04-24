@@ -41,7 +41,7 @@
         + '<div id="guessSelector${hintIndex}" class="guess-selector"></div>'
         + '</div>'
 
-    let jstpl_guess_selector_item = '<div id=${hintIndex}_${selectorIndex} class="guess-selector-item">${label}</div>';
+    let jstpl_guess_selector_item = '<div id="guess_selector_item_${hintIndex}_${selectorIndex}" class="guess-selector-item">${selectorIndex}</div>';
 
     let jstpl_tokens = '<div>'
         + '<div>${teamName}</div>'

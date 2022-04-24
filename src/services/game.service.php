@@ -34,7 +34,7 @@ class GameService
         $this->gameRepository->saveTurn($nextTurn);
     }
 
-    private function calculateNextTurn(Turn $currentTurn, $teams): Turn
+    private function calculateNextTurn(Turn $currentTurn, array $teams): Turn
     {
         $round_number = $currentTurn->round_number;
         $turn_number = $currentTurn->turn_number;
@@ -52,7 +52,7 @@ class GameService
         return new Turn($round_number, $turn_number);
     }
 
-    public function getWordsForPlayer($player_id): array
+    public function getWordsForPlayer(int $player_id): array
     {
         return $this->gameRepository->getWordsForPlayer($player_id);
     }

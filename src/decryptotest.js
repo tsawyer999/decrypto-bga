@@ -27,8 +27,7 @@ const templates = function(that) {
         getGuessSelector(hintIndex, selectorIndex) {
             return that.format_block('jstpl_guess_selector_item', {
                 hintIndex: hintIndex,
-                selectorIndex: selectorIndex,
-                label: selectorIndex + 1
+                selectorIndex: selectorIndex
             });
         },
         getCode(code) {
@@ -76,18 +75,23 @@ const layout = function(that, dojo, templates) {
                 i++;
             }
         },
-        displayGuessHints(hints, wordsCount) {
+        displayGuessHints(hints, wordsCount, onGuessHintSelectorClick) {
             let hintIndex=0;
             for (const hint of hints) {
                 const guessHintBlockId = `guessSelector${hintIndex}`;
                 const guessHintBlock = templates.getGuessHint(hintIndex, hint);
                 dojo.place(guessHintBlock, 'guessHintsUi');
-                hintIndex++;
 
-                for (let j=0; j<wordsCount; j++) {
-                    const selectorBlock = templates.getGuessSelector(hintIndex, j);
+                for (let selectorIndex=1; selectorIndex<=wordsCount; selectorIndex++) {
+                    const selectorBlock = templates.getGuessSelector(hintIndex, selectorIndex);
                     dojo.place(selectorBlock, guessHintBlockId);
+
+                    const id = `guess_selector_item_${hintIndex}_${selectorIndex}`;
+                    const button = document.getElementById(id);
+                    dojo.connect(button, 'onclick', onGuessHintSelectorClick(hintIndex, selectorIndex));
                 }
+
+                hintIndex++;
             }
         },
         displayTokens(teams) {
@@ -112,7 +116,9 @@ const layout = function(that, dojo, templates) {
                 const team = teams[teamId];
                 const teamBlock = templates.getTeam(team);
                 dojo.place(teamBlock, 'teams');
-                dojo.connect(document.getElementById(`changeTeamName${team.id}Button`), 'onclick', onChangeTeamNameClick(team.id));
+
+                const button = document.getElementById(`changeTeamName${team.id}Button`);
+                dojo.connect(button, 'onclick', onChangeTeamNameClick(team.id));
 
                 this.displayPlayersByTeams(team, players);
             }
@@ -248,7 +254,7 @@ const states = {
 
                 layout.displayWords(words);
                 layout.displayTokens(teams);
-                layout.displayGuessHints(hints, words.length);
+                layout.displayGuessHints(hints, words.length, this.onGuessHintSelectorClick.bind());
             },
             leaving(stateName) {
                 console.log(`leaving stateName: ${stateName}`);
@@ -256,6 +262,15 @@ const states = {
             updateActionButtons(stateName, args) {
                 console.log(`updateActionButtons stateName: ${stateName} args: ${args}`);
             },
+            onGuessHintSelectorClick(hintIndex, selectorIndex) {
+                return function() {
+                    console.log(`click hintIndex=${hintIndex} selectorIndex=${selectorIndex}`);
+                    that.doAction('changeGuessSelectorIndex', {
+                        hintIndex,
+                        selectorIndex
+                    });
+                }
+            }
         };
     }
 }
@@ -280,6 +295,14 @@ const events = {
         const team = document.getElementById(`teamMembers${notification.args.teamId}`);
 
         team.appendChild(player);
+    },
+    onChangeGuessSelectorIndex: function (notification) {
+        console.log('onChangeGuessSelectorIndex', notification);
+
+        const hintIndex = notification.args.hintIndex;
+        const selectorIndex = notification.args.selectorIndex;
+
+        console.log('==============', hintIndex, selectorIndex)
     }
 }
 

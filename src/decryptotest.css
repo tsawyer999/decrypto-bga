@@ -50,7 +50,7 @@
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
-    background-color: lightgray;
+    background-color: white;
     border: 1px black solid;
     width: 750px;
     padding: 10px;
@@ -59,6 +59,7 @@
 
 .guess-label {
     font-size: 50px;
+    color: black;
     width: 500px;
 }
 
@@ -71,7 +72,9 @@
 
 .guess-selector-item {
     font-size: 50px;
-    border: 1px solid black;
+    border: 1px solid red;
+    color: red;
+    background-color: black;
     width: 50px;
     text-align: center;
 }

@@ -82,32 +82,32 @@ class DecryptoTest extends Table
         return 0;
     }
 
-    function getCollectionFromDb2($sql)
+    function getCollectionFromDb2(string $sql)
     {
         return self::getCollectionFromDb($sql);
     }
 
-    function dbQuery2($sql)
+    function dbQuery2(string $sql)
     {
         return self::DbQuery($sql);
     }
 
-    function getObjectFromDb2($sql)
+    function getObjectFromDb2(string $sql)
     {
         return self::getObjectFromDB($sql);
     }
 
-    function getUniqueValueFromDb2($sql)
+    function getUniqueValueFromDb2(string $sql)
     {
         return self::getUniqueValueFromDB($sql);
     }
 
-    function getObjectListFromDd2($sql)
+    function getObjectListFromDd2(string $sql)
     {
         return self::getObjectListFromDB($sql);
     }
 
-    function changeTeamName($teamId, $teamName) {
+    function changeTeamName(int $teamId, string $teamName) {
         $this->teamService->changeTeamName($teamId, $teamName);
 
         $playerName = $this->getCurrentPlayerName();
@@ -142,7 +142,17 @@ class DecryptoTest extends Table
         $this->gamestate->nextState('guessHints');
     }
 
-    function logMessage($message): void
+    function changeGuessSelectorIndex(int $hintIndex, int $selectorIndex)
+    {
+        $current_player_id = self::getCurrentPlayerId();
+
+        self::notifyAllPlayers('onChangeGuessSelectorIndex', "SOMETHING HAPPEN", array(
+            'hintIndex' => $hintIndex,
+            'selectorIndex' => $selectorIndex
+        ));
+    }
+
+    function logMessage(string $message): void
     {
         self::debug($message);
     }
