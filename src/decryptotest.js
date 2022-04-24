@@ -228,26 +228,27 @@ const guessHints = function(that, dojo, layout) {
     };
 };
 
-const onChangeteamName = function(notification) {
-    const teamId = notification.args.teamId;
-    const teamName = notification.args.teamName;
+const events = {
+    onChangeteamName: function(notification) {
+        const teamId = notification.args.teamId;
+        const teamName = notification.args.teamName;
 
-    const labelId = `teamNameLabel${teamId}`;
-    const teamNameLabel = document.getElementById(labelId);
-    if (teamNameLabel) {
-        teamNameLabel.innerText = teamName;
-    } else {
-        throw `label with id [${labelId}] not found`;
+        const labelId = `teamNameLabel${teamId}`;
+        const teamNameLabel = document.getElementById(labelId);
+        if (teamNameLabel) {
+            teamNameLabel.innerText = teamName;
+        } else {
+            throw `label with id [${labelId}] not found`;
+        }
+    },
+    onSwitchTeam: function (notification) {
+        console.log('onSwitchTeam', notification);
+        const player = document.getElementById(`teamMember${notification.args.playerId}`);
+        const team = document.getElementById(`teamMembers${notification.args.teamId}`);
+
+        team.appendChild(player);
     }
-};
-
-const onSwitchTeam = function (notification) {
-    console.log('onSwitchTeam', notification);
-    const player = document.getElementById(`teamMember${notification.args.playerId}`);
-    const team = document.getElementById(`teamMembers${notification.args.teamId}`);
-
-    team.appendChild(player);
-};
+}
 
 define(
     [
@@ -336,8 +337,9 @@ define(
                 );
             },
             setupNotifications() {
-                dojo.subscribe('onChangeTeamName', this, onChangeteamName);
-                dojo.subscribe('onSwitchTeam', this, onSwitchTeam);
+                for (const event in events) {
+                    dojo.subscribe(event, this, events[event]);
+                }
             }
         });
     }
