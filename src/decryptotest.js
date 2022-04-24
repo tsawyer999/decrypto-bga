@@ -228,6 +228,31 @@ const guessHints = function(that, dojo, layout) {
     };
 };
 
+const notif_changeteamName = function(notification) {
+    const teamId = notification.args.teamId;
+    const teamName = notification.args.teamName;
+
+    const labelId = `teamNameLabel${teamId}`;
+    const teamNameLabel = document.getElementById(labelId);
+    if (teamNameLabel) {
+        teamNameLabel.innerText = teamName;
+    } else {
+        throw `label with id [${labelId}] not found`;
+    }
+};
+
+const notif_completeTeamSetup = function(notification) {
+    console.log('onCompleteTeamSetup', notification);
+};
+
+const notif_switchTeam = function (notification) {
+    console.log('onSwitchTeam', notification);
+    const player = document.getElementById(`teamMember${notification.args.playerId}`);
+    const team = document.getElementById(`teamMembers${notification.args.teamId}`);
+
+    team.appendChild(player);
+};
+
 define(
     [
         "dojo",
@@ -315,31 +340,9 @@ define(
                 );
             },
             setupNotifications() {
-                dojo.subscribe('changeTeamName', this, "notif_changeteamName");
-                dojo.subscribe('completeTeamSetup', this, "notif_completeTeamSetup");
-                dojo.subscribe('switchTeam', this, "notif_switchTeam");
-            },
-            notif_changeteamName(notification) {
-                const teamId = notification.args.teamId;
-                const teamName = notification.args.teamName;
-
-                const labelId = `teamNameLabel${teamId}`;
-                const teamNameLabel = document.getElementById(labelId);
-                if (teamNameLabel) {
-                    teamNameLabel.innerText = teamName;
-                } else {
-                    throw `label with id [${labelId}] not found`;
-                }
-            },
-            notif_completeTeamSetup(notification) {
-                console.log('onCompleteTeamSetup', notification);
-            },
-            notif_switchTeam(notification) {
-                console.log('onSwitchTeam', notification);
-                const sourceId = `teamMember${notification.args.playerId}`;
-                const targetId = `teamMembers${notification.args.teamId}`;
-
-                this.slideToObject(sourceId, targetId).play();
+                dojo.subscribe('changeTeamName', this, notif_changeteamName);
+                dojo.subscribe('completeTeamSetup', this, notif_completeTeamSetup);
+                dojo.subscribe('switchTeam', this, notif_switchTeam);
             }
         });
     }
