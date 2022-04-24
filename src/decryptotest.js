@@ -302,9 +302,13 @@ const events = {
         const hintIndex = notification.args.hintIndex;
         const selectorIndex = notification.args.selectorIndex;
 
-        const previousItem = document.querySelector(`#guessSelector${hintIndex} > .selected`);
-        if (previousItem) {
-            previousItem.classList.remove('selected');
+        let items = document.querySelectorAll(`#guessSelector${hintIndex} > .selected`);
+        for (const item of items) {
+            item.classList.remove('selected');
+        }
+        items = document.querySelectorAll(`.guess-selector-item.selected[data-selector-index="${selectorIndex}"]`);
+        for (const item of items) {
+            item.classList.remove('selected');
         }
 
         const currentItem = document.querySelector(`#guess_selector_item_${hintIndex}_${selectorIndex}`);
