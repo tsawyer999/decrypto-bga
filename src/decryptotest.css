@@ -79,6 +79,12 @@
     text-align: center;
 }
 
+.guess-selector-item.selected {
+    border: 1px solid black;
+    color: black;
+    background-color: red;
+}
+
 #boardUi {
     display: flex;
     flex-direction: row;
