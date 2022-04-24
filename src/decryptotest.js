@@ -302,16 +302,13 @@ const events = {
         const hintIndex = notification.args.hintIndex;
         const selectorIndex = notification.args.selectorIndex;
 
-        const selector = document.getElementById(`guessSelector${hintIndex}`);
-        const selectorItems = selector.getElementsByClassName('guess-selector-item');
-        for (const item of selectorItems) {
-            item.classList.remove('selected');
+        const previousItem = document.querySelector(`#guessSelector${hintIndex} > .selected`);
+        if (previousItem) {
+            previousItem.classList.remove('selected');
         }
-        const id = `guess_selector_item_${hintIndex}_${selectorIndex}`;
-        const button = document.getElementById(id);
-        button.classList.add('selected');
 
-        console.log('==============', hintIndex, selectorIndex)
+        const currentItem = document.querySelector(`#guess_selector_item_${hintIndex}_${selectorIndex}`);
+        currentItem.classList.add('selected');
     }
 }
 
