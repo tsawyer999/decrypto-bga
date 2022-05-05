@@ -18,7 +18,7 @@ class DecryptoTest extends Table
     private PlayersService $playersService;
     private TeamsService $teamsService;
 
-    function __construct()
+    public function __construct()
     {
         parent::__construct();
 
@@ -31,15 +31,15 @@ class DecryptoTest extends Table
         $playersRepository = new PlayersRepository($this);
         $this->playersService = new PlayersService($playersRepository);
 
-        self::initGameStateLabels(array());
+        self::initGameStateLabels([]);
     }
 
-    protected function getGameName()
+    protected function getGameName(): string
     {
         return "decryptotest";
     }
 
-    protected function setupNewGame($players, $options = array())
+    protected function setupNewGame($players, $options = [])
     {
         $param_number_team = 2;
         for ($i = 1; $i <= $param_number_team; $i++)
@@ -66,143 +66,12 @@ class DecryptoTest extends Table
         return $result;
     }
 
-    protected function argPlayerTurn()
-    {
-        return array(
-            'possibleMoves' => self::getPossibleMoves(self::getActivePlayerId())
-        );
-    }
-
-    function getGameProgression()
+    public function getGameProgression(): int
     {
         return 0;
     }
 
-    function changeTeamName(int $teamId, string $teamName) {
-        $this->teamsService->changeTeamName($teamId, $teamName);
-
-        $playerName = $this->getCurrentPlayerName();
-        self::notifyAllPlayers('onChangeteamName', "$playerName change team $teamId name to $teamName", array(
-            'teamId' => $teamId,
-            'teamName' => $teamName
-        ));
-    }
-
-    function completeTeamSetup() {
-        $playerId = $this->getCurrentPlayerId();
-        $this->gamestate->setPlayerNonMultiactive($playerId, 'beginGame');
-    }
-
-    function switchTeam() {
-        $playerId = $this->getCurrentPlayerId();
-        $teamId = $this->teamsService->switchTeam($playerId);
-
-        $playerName = $this->getCurrentPlayerName();
-        self::notifyAllPlayers('onSwitchTeam', "$playerName switch to team $teamId", array(
-            'playerId' => $playerId,
-            'playerName' => $playerName,
-            'teamId' => $teamId
-        ));
-    }
-
-    function giveHints($hints)
-    {
-        $player_id = self::getCurrentPlayerId();
-        $this->gamesService->giveHints($player_id, $hints);
-
-        $this->gamestate->nextState('guessHints');
-    }
-
-    function changeGuessSelectorIndex(int $hintIndex, int $selectorIndex)
-    {
-        $current_player_id = self::getCurrentPlayerId();
-
-        self::notifyAllPlayers('onChangeGuessSelectorIndex', "SOMETHING HAPPEN", array(
-            'hintIndex' => $hintIndex,
-            'selectorIndex' => $selectorIndex
-        ));
-    }
-
-    function logMessage(string $message): void
-    {
-        self::debug($message);
-    }
-
-    function argTeamSetup()
-    {
-        $result = [];
-
-        $result['players'] = $this->playersService->getPlayers();
-        $result['teams'] = $this->teamsService->getTeams();
-
-        return $result;
-    }
-
-    function argGiveHints()
-    {
-        $result = [];
-        $current_player_id = self::getCurrentPlayerId();
-
-        $result['teams'] = $this->teamsService->getTeams();
-        $result['words'] = $this->gamesService->getWordsForPlayer($current_player_id);
-        $result['code'] = [1, 4, 2];
-
-        return $result;
-    }
-
-    function argGuessHints()
-    {
-        $result = [];
-        $current_player_id = self::getCurrentPlayerId();
-
-        $result['teams'] = $this->teamsService->getTeams();
-        $result['words'] = $this->gamesService->getWordsForPlayer($current_player_id);
-        $result['hints'] = $this->gamesService->getHintsForCurrentTurn();
-
-        return $result;
-    }
-
-    function stBeginGame()
-    {
-        $this->logMessage("stBeginGame");
-        $sequence_length = 3;
-        $param_number_words = 4;
-
-        $this->gamesService->startGame($sequence_length, $param_number_words);
-
-        $this->gamestate->nextState('beginTurn');
-    }
-
-    function stBeginTurn()
-    {
-        $this->logMessage("stBeginTurn");
-        $this->gamesService->moveToNextTurn();
-
-        $playerId = $this->gamesService->getPlayerIdForGiveHints();
-        $this->gamestate->changeActivePlayer($playerId);
-
-        $this->gamestate->nextState("giveHints");
-    }
-
-    function stGiveHints() {
-    }
-
-    function stGuessHints() {
-        $this->gamestate->setAllPlayersMultiactive();
-    }
-
-    function stEndTurn()
-    {
-        if (true)
-        {
-            $this->gamestate->nextState( "newTurn" );
-        } else
-        {
-            $this->gamestate->nextState( "gameEnd" );
-        }
-    }
-
-    function zombieTurn($state, $active_player)
+    public function zombieTurn($state, $active_player): void
     {
         $statename = $state['name'];
 
@@ -229,27 +98,161 @@ class DecryptoTest extends Table
         throw new feException("Zombie mode not supported at this game state: ".$statename);
     }
 
-    function getCollectionFromDb2(string $sql)
+    public function logMessage(string $message): void
+    {
+        self::debug($message);
+    }
+
+    public function actCangeTeamName(int $teamId, string $teamName): void {
+        $this->teamsService->changeTeamName($teamId, $teamName);
+
+        $playerName = $this->getCurrentPlayerName();
+        self::notifyAllPlayers('onChangeteamName', "$playerName change team $teamId name to $teamName", array(
+            'teamId' => $teamId,
+            'teamName' => $teamName
+        ));
+    }
+
+    public function actCompleteTeamSetup(): void {
+        $playerId = $this->getCurrentPlayerId();
+        $this->gamestate->setPlayerNonMultiactive($playerId, 'beginGame');
+    }
+
+    public function actSwitchTeam(): void {
+        $playerId = $this->getCurrentPlayerId();
+        $teamId = $this->teamsService->switchTeam($playerId);
+
+        $playerName = $this->getCurrentPlayerName();
+        self::notifyAllPlayers('onSwitchTeam', "$playerName switch to team $teamId", array(
+            'playerId' => $playerId,
+            'playerName' => $playerName,
+            'teamId' => $teamId
+        ));
+    }
+
+    public function actGiveHints($hints): void
+    {
+        $player_id = self::getCurrentPlayerId();
+        $this->gamesService->giveHints($player_id, $hints);
+
+        $this->gamestate->nextState('guessHints');
+    }
+
+    public function actChangeGuessSelectorIndex(int $hintIndex, int $selectorIndex): void
+    {
+        $current_player_id = self::getCurrentPlayerId();
+
+        self::notifyAllPlayers('onChangeGuessSelectorIndex', "SOMETHING HAPPEN", array(
+            'hintIndex' => $hintIndex,
+            'selectorIndex' => $selectorIndex
+        ));
+    }
+
+    public function argPlayerTurn(): array
+    {
+        $result = [];
+
+        $result['possibleMoves'] = self::getPossibleMoves(self::getActivePlayerId());
+        return $result;
+    }
+
+    public function argTeamSetup(): array
+    {
+        $result = [];
+
+        $result['players'] = $this->playersService->getPlayers();
+        $result['teams'] = $this->teamsService->getTeams();
+
+        return $result;
+    }
+
+    public function argGiveHints(): array
+    {
+        $result = [];
+        $current_player_id = self::getCurrentPlayerId();
+
+        $result['teams'] = $this->teamsService->getTeams();
+        $result['words'] = $this->gamesService->getWordsForPlayer($current_player_id);
+        $result['code'] = [1, 4, 2];
+
+        return $result;
+    }
+
+    public function argGuessHints(): array
+    {
+        $result = [];
+        $current_player_id = self::getCurrentPlayerId();
+
+        $result['teams'] = $this->teamsService->getTeams();
+        $result['words'] = $this->gamesService->getWordsForPlayer($current_player_id);
+        $result['hints'] = $this->gamesService->getHintsForCurrentTurn();
+
+        return $result;
+    }
+
+    public function stBeginGame(): void
+    {
+        $this->logMessage("stBeginGame");
+        $sequence_length = 3;
+        $param_number_words = 4;
+
+        $this->gamesService->startGame($sequence_length, $param_number_words);
+
+        $this->gamestate->nextState('beginTurn');
+    }
+
+    public function stBeginTurn(): void
+    {
+        $this->logMessage("stBeginTurn");
+        $this->gamesService->moveToNextTurn();
+
+        $playerId = $this->gamesService->getPlayerIdForGiveHints();
+        $this->gamestate->changeActivePlayer($playerId);
+
+        $this->gamestate->nextState("giveHints");
+    }
+
+    public function stGiveHints(): void
+    {
+    }
+
+    public function stGuessHints(): void
+    {
+        $this->gamestate->setAllPlayersMultiactive();
+    }
+
+    public function stEndTurn(): void
+    {
+        if (true)
+        {
+            $this->gamestate->nextState( "newTurn" );
+        } else
+        {
+            $this->gamestate->nextState( "gameEnd" );
+        }
+    }
+
+    public function getCollectionFromDb2(string $sql): array
     {
         return self::getCollectionFromDb($sql);
     }
 
-    function dbQuery2(string $sql)
+    public function dbQuery2(string $sql)
     {
         return self::DbQuery($sql);
     }
 
-    function getObjectFromDb2(string $sql)
+    public function getObjectFromDb2(string $sql)
     {
         return self::getObjectFromDB($sql);
     }
 
-    function getUniqueValueFromDb2(string $sql)
+    public function getUniqueValueFromDb2(string $sql)
     {
         return self::getUniqueValueFromDB($sql);
     }
 
-    function getObjectListFromDd2(string $sql)
+    public function getObjectListFromDd2(string $sql): array
     {
         return self::getObjectListFromDB($sql);
     }
