@@ -1,6 +1,6 @@
 <?php
 
-class PlayerRepository
+class PlayersRepository
 {
     private DecryptoTest $db;
 

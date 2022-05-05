@@ -2,7 +2,7 @@
 require_once(__DIR__ . "/../data/words.php");
 require_once(__DIR__ . "/../models/turn.model.php");
 
-class GameRepository
+class GamesRepository
 {
     private DecryptoTest $db;
 

@@ -2,7 +2,7 @@
 
 require_once(__DIR__ . "/../models/team.model.php");
 
-class TeamRepository
+class TeamsRepository
 {
     private DecryptoTest $db;
 

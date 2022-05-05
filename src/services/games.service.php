@@ -1,37 +1,37 @@
 <?php
 
-require_once(__DIR__ . "/../repositories/game.repository.php");
+require_once(__DIR__ . "/../repositories/games.repository.php");
 require_once(__DIR__ . "/../models/dictionary-random-picker.php");
 require_once(__DIR__ . "/../models/turn.model.php");
 require_once(__DIR__ . "/../models/hint.model.php");
 
-class GameService
+class GamesService
 {
-    private GameRepository $gameRepository;
-    private TeamRepository $teamRepository;
+    private GamesRepository $gamesRepository;
+    private TeamsRepository $teamsRepository;
 
-    public function __construct(GameRepository $gameRepository, TeamRepository $teamRepository)
+    public function __construct(GamesRepository $gameRepository, TeamsRepository $teamRepository)
     {
-        $this->gameRepository = $gameRepository;
-        $this->teamRepository = $teamRepository;
+        $this->gamesRepository = $gameRepository;
+        $this->teamsRepository = $teamRepository;
     }
 
-    public function startGame(int $sequence_length, int $param_number_words)
+    public function startGame(int $sequence_length, int $param_number_words): void
     {
         $this->setWordsForAllTeams($param_number_words);
         $this->setCodesForGame($sequence_length, $param_number_words);
 
         $turn = new Turn(0, 0);
-        $this->gameRepository->saveTurn($turn);
+        $this->gamesRepository->saveTurn($turn);
     }
 
     public function moveToNextTurn(): void
     {
-        $currentTurn = $this->gameRepository->getCurrentTurn();
-        $teams = $this->teamRepository->getTeams();
+        $currentTurn = $this->gamesRepository->getCurrentTurn();
+        $teams = $this->teamsRepository->getTeams();
 
         $nextTurn = $this->calculateNextTurn($currentTurn, $teams);
-        $this->gameRepository->saveTurn($nextTurn);
+        $this->gamesRepository->saveTurn($nextTurn);
     }
 
     private function calculateNextTurn(Turn $currentTurn, array $teams): Turn
@@ -54,7 +54,7 @@ class GameService
 
     public function getWordsForPlayer(int $player_id): array
     {
-        return $this->gameRepository->getWordsForPlayer($player_id);
+        return $this->gamesRepository->getWordsForPlayer($player_id);
     }
 
     private function setCodesForGame($sequence_length, $param_number_words)
@@ -65,7 +65,7 @@ class GameService
 
     private function saveCodes(array $codes): void
     {
-        $this->gameRepository->saveCodes($codes);
+        $this->gamesRepository->saveCodes($codes);
     }
 
     private function generateAllCodes(int $sequence_length, int $param_number_words): array
@@ -112,10 +112,10 @@ class GameService
 
     private function setWordsForAllTeams(int $param_number_words): void
     {
-        $words = $this->gameRepository->getWords();
+        $words = $this->gamesRepository->getWords();
         $dictionary = new DictionaryRandomPicker($words);
 
-        $teams = $this->teamRepository->getTeams();
+        $teams = $this->teamsRepository->getTeams();
         foreach ($teams as $team)
         {
             $teamWords = [];
@@ -124,14 +124,14 @@ class GameService
                 $word = $dictionary->pick();
                 array_push($teamWords, $word);
             }
-            $this->gameRepository->saveWords($team->id, $teamWords);
+            $this->gamesRepository->saveWords($team->id, $teamWords);
         }
     }
 
     public function getPlayerIdForGiveHints(): int
     {
-        $turn = $this->gameRepository->getCurrentTurn();
-        $teams = $this->teamRepository->getTeams();
+        $turn = $this->gamesRepository->getCurrentTurn();
+        $teams = $this->teamsRepository->getTeams();
 
         $numberOfPlayers = count($teams[$turn->turn_number]->playerIds);
         return $teams[$turn->turn_number]->playerIds[$turn->round_number % $numberOfPlayers];
@@ -139,20 +139,20 @@ class GameService
 
     public function giveHints(int $playerId, array $hints): void
     {
-        $turn = $this->gameRepository->getCurrentTurn();
+        $turn = $this->gamesRepository->getCurrentTurn();
 
         $hint = new Hint();
         $hint->player_id = $playerId;
         $hint->turn_id = $turn->id;
         $hint->value = $hints;
 
-        $this->gameRepository->saveHints($hint);
+        $this->gamesRepository->saveHints($hint);
     }
 
     public function getHintsForCurrentTurn(): array
     {
-        $turn = $this->gameRepository->getCurrentTurn();
+        $turn = $this->gamesRepository->getCurrentTurn();
 
-        return $this->gameRepository->getHints($turn->id);
+        return $this->gamesRepository->getHints($turn->id);
     }
 }
