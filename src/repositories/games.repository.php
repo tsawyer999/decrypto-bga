@@ -119,4 +119,15 @@ class GamesRepository
         $value = $this->db->getUniqueValueFromDb2($sql);
         return json_decode($value);
     }
+
+    public function getAvailableCodes(int $player_id): array
+    {
+        $sql = "SELECT player.team_id "
+            . "FROM player "
+            . "WHERE player_id = " . $player_id;
+
+        $sql = "SELECT codes.id"
+            . "FROM codes "
+            . "WHERE"
+    }
 }
