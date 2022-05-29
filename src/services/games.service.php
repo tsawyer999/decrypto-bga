@@ -155,4 +155,10 @@ class GamesService
 
         return $this->gamesRepository->getHints($turn->id);
     }
+
+    public function newCodeForPlayer(int $current_player_id)
+    {
+        $codes = $this->gamesRepository->getAvailableCodes($current_player_id);
+
+    }
 }
