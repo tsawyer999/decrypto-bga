@@ -1,5 +1,6 @@
 <?php
 require_once(__DIR__ . "/../data/words.php");
+require_once(__DIR__ . "/../models/code.model.php");
 require_once(__DIR__ . "/../models/turn.model.php");
 
 class GamesRepository
@@ -122,12 +123,55 @@ class GamesRepository
 
     public function getAvailableCodes(int $player_id): array
     {
-        $sql = "SELECT player.team_id "
-            . "FROM player "
-            . "WHERE player_id = " . $player_id;
-
-        $sql = "SELECT codes.id"
+        $sql = "SELECT "
+            . "codes.id, "
+            . "codes.value "
             . "FROM codes "
-            . "WHERE"
+            . "LEFT JOIN "
+            . "(SELECT code_draws.code_id, player.team_id "
+            . "FROM code_draws "
+            . "INNER JOIN player "
+            . "ON player.player_id = code_draws.player_id "
+            . "WHERE player.team_id = (SELECT team_id FROM player WHERE player_id = " . $player_id . ")) AS code_draws_teams "
+            . "ON codes.id = code_draws_teams.code_id "
+            . "WHERE code_id IS NULL";
+
+        $codes = $this->db->getCollectionFromDb2($sql);
+
+        return $this->convertCodesRecordToModel($codes);
+    }
+
+    private function convertCodesRecordToModel(array $codeList): array
+    {
+        // foreach
+
+        $codes = [];
+        foreach ($codeList as $t)
+        {
+            $code = $this->convertCodeRecordToModel($t);
+            array_push($codes, $code);
+        }
+
+        return $codes;
+    }
+
+    private function convertCodeRecordToModel(array $t): Code
+    {
+        return new Code($t['id'], json_decode($t['value']));
+    }
+
+    public function saveDrawCode($turnId, $codeId, $playerId): void
+    {
+        $sql = "INSERT INTO code_draws ("
+            . "turn_id,"
+            . "code_id,"
+            . "player_id"
+            . ") VALUES ("
+            . $turnId . ","
+            . $codeId . ","
+            . $playerId . ","
+            . ")";
+
+        $this->db->dbQuery2($sql);
     }
 }

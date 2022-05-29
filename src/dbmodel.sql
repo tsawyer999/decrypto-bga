@@ -52,11 +52,7 @@ CREATE TABLE IF NOT EXISTS code_draws
     FOREIGN KEY (player_id) REFERENCES player (player_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
-CREATE VIEW available_codes
-AS
-
 /*
-
 CREATE TABLE IF NOT EXISTS guess
 (
     guess_round_id INT(10) UNSIGNED NOT NULL,

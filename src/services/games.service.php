@@ -156,9 +156,15 @@ class GamesService
         return $this->gamesRepository->getHints($turn->id);
     }
 
-    public function newCodeForPlayer(int $current_player_id)
+    public function newCodeForPlayer(int $current_player_id): array
     {
         $codes = $this->gamesRepository->getAvailableCodes($current_player_id);
+        $randomIndex = bga_rand(0, count($codes));
+        $selectedCode = $codes[$randomIndex];
+        $turn = $this->gamesRepository->getCurrentTurn();
 
+        $this->gamesRepository->saveDrawCode($turn->id, $selectedCode->id, $current_player_id);
+
+        return $selectedCode->value;
     }
 }
