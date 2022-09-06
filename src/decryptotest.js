@@ -212,8 +212,11 @@ const states = {
 
                 layout.displayWords(words);
                 layout.displayTokens(teams);
-                layout.displayCodeCard(code);
-                layout.displayGiveHints(code);
+                
+                if (!!code) {
+                    layout.displayCodeCard(code);
+                    layout.displayGiveHints(code);
+                }
 
                 that.addActionButton('giveHintsBtn', _("Give hints"), this.onGiveHintsClick);
             },

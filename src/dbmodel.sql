@@ -40,8 +40,19 @@ CREATE TABLE IF NOT EXISTS hints
     FOREIGN KEY (player_id) REFERENCES player (player_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
-/*
+CREATE TABLE IF NOT EXISTS code_draws
+(
+    code_draw_id INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+    turn_id INT(10) UNSIGNED NOT NULL,
+    code_id INT(10) UNSIGNED NOT NULL,
+    player_id INT(10) UNSIGNED NOT NULL,
+    PRIMARY KEY (code_draw_id),
+    FOREIGN KEY (turn_id) REFERENCES turns (id),
+    FOREIGN KEY (code_id) REFERENCES codes (id),
+    FOREIGN KEY (player_id) REFERENCES player (player_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
+/*
 CREATE TABLE IF NOT EXISTS guess
 (
     guess_round_id INT(10) UNSIGNED NOT NULL,

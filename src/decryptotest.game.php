@@ -173,7 +173,15 @@ class DecryptoTest extends Table
 
         $result['teams'] = $this->teamsService->getTeams();
         $result['words'] = $this->gamesService->getWordsForPlayer($current_player_id);
-        $result['code'] = [1, 4, 2];
+
+        if ($current_player_id == $this->gamesService->getPlayerIdForGiveHints())
+        {
+            $result['code'] = $this->gamesService->newCodeForPlayer($current_player_id);
+        }
+        else
+        {
+            $result['code'] = null;
+        }
 
         return $result;
     }
