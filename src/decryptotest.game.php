@@ -103,7 +103,7 @@ class DecryptoTest extends Table
         self::debug($message);
     }
 
-    public function actCangeTeamName(int $teamId, string $teamName): void {
+    public function actChangeTeamName(int $teamId, string $teamName): void {
         $this->teamsService->changeTeamName($teamId, $teamName);
 
         $playerName = $this->getCurrentPlayerName();
