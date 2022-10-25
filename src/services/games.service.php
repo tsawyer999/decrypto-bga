@@ -167,4 +167,14 @@ class GamesService
 
         return $selectedCode->value;
     }
+
+    public function getPreviousHints(): array
+    {
+        return [
+            0 => ['blanc'],
+            1 => ['volant', 'coloré', 'céréales'],
+            2 => [],
+            3 => ['repas'],
+        ];
+    }
 }

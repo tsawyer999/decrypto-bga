@@ -38,15 +38,15 @@ body {
     height: 250px;
 }
 
-.hint {
+.giveHint {
     margin: 10px;
 }
 
-.hint label {
+.giveHint label {
     font-size: 50px;
 }
 
-.hint input {
+.giveHint input {
     font-size: 50px;
 }
 
@@ -99,9 +99,6 @@ body {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-
-    height: 200px;
-    width: 600px;
 }
 
 #codeStack {
@@ -130,8 +127,15 @@ body {
     background-image: url('img/assets/codecard_front.png');
 }
 
+.wordColumn {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
 .word {
     display: flex;
+    flex-direction: row;
     justify-content: space-around;
     align-items: center;
 
@@ -139,7 +143,8 @@ body {
     font-size: 20pt;
     font-weight: bold;
 
-    width: 400px;
+    height: 200px;
+    width: 150px;
 
     background-size: contain;
     background-repeat: no-repeat;
@@ -150,6 +155,11 @@ body {
     background-color: black;
     position: relative;
     top: -25px;
+}
+
+.previousHints {
+    border: 1px solid black;
+    width: 100%;
 }
 
 .tokensSection {

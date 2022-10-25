@@ -29,11 +29,16 @@
 
     let jstpl_team_member = '<div id="teamMember${id}" class="team-member">${name}</div>';
 
-    let jstpl_word = '<div class="word"><span>${word}</span>';
+    let jstpl_word_column = '<div class="wordColumn">'
+        + '<div class="word"><span>${word}</span></div>'
+        + '<div id="previousHints${id}" class="previousHints"></div>'
+        + '</div>';
 
-    let jstpl_give_hint = '<div class="hint">'
-        + '<label for="hint${id}">${code}</label>'
-        + '<input id="hint${id}" type="text" size="30" maxlength="30">'
+    let jstpl_previous_hint = '<div>${hint}</div>';
+
+    let jstpl_give_hint = '<div class="giveHint">'
+        + '<label for="giveHint${id}">${code}</label>'
+        + '<input id="giveHint${id}" type="text" size="30" maxlength="30">'
         + '</div>'
 
     let jstpl_guess_hint = '<div class="guess">'

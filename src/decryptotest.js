@@ -35,8 +35,9 @@ const templates = function(that) {
                 code: code.join('-')
             });
         },
-        getWord(word) {
-            return that.format_block('jstpl_word', {
+        getWordColumn(id, word) {
+            return that.format_block('jstpl_word_column', {
+                id: id,
                 word: word
             });
         },
@@ -52,15 +53,29 @@ const templates = function(that) {
                 name: player.name
             });
         },
+        getPreviousHint(hint) {
+            return that.format_block('jstpl_previous_hint', {
+                hint: hint
+            });
+        }
     };
 };
 
 const layout = function(that, dojo, templates) {
     return {
         displayWords(words) {
-            for (const word of words) {
-                const wordBlock = templates.getWord(word);
+            for (const [index, word] of words.entries()) {
+                const wordBlock = templates.getWordColumn(index, word);
                 dojo.place(wordBlock, 'wordsSection');
+            }
+        },
+        displayPreviousHints(hints) {
+            console.log('displayPreviousHints');
+            for (let i=0; i<hints.length; i++) {
+                for (const [index, hint] of hints[i].entries()) {
+                    const previousHintBlock = templates.getPreviousHint(hint);
+                    dojo.place(previousHintBlock, `previousHints${i}`);
+                }
             }
         },
         displayCodeCard(code) {
@@ -209,8 +224,10 @@ const states = {
                 const teams = args.teams;
                 const words = args.words;
                 const code = args.code;
+                const previousHints = args.previousHints;
 
                 layout.displayWords(words);
+                layout.displayPreviousHints(previousHints);
                 layout.displayTokens(teams);
                 
                 if (!!code) {
