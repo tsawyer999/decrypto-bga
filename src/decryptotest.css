@@ -1,3 +1,7 @@
+body {
+    background-image: url('img/assets/game-background.png');
+}
+
 #teams {
     width: 100%;
     display: flex;
