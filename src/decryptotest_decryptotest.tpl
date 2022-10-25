@@ -30,7 +30,8 @@
     let jstpl_team_member = '<div id="teamMember${id}" class="team-member">${name}</div>';
 
     let jstpl_word_column = '<div class="wordColumn">'
-        + '<div class="word"><span>${word}</span></div>'
+        + '<div class="wordBackground"></div>'
+        + '<div class="word"><div>${word}</div></div>'
         + '<div id="previousHints${id}" class="previousHints"></div>'
         + '</div>';
 

@@ -72,7 +72,7 @@ const layout = function(that, dojo, templates) {
         displayPreviousHints(hints) {
             console.log('displayPreviousHints');
             for (let i=0; i<hints.length; i++) {
-                for (const [index, hint] of hints[i].entries()) {
+                for (const hint of hints[i]) {
                     const previousHintBlock = templates.getPreviousHint(hint);
                     dojo.place(previousHintBlock, `previousHints${i}`);
                 }

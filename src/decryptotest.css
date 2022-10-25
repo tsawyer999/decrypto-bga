@@ -133,6 +133,17 @@ body {
     flex-direction: column;
 }
 
+.wordBackground {
+    position: absolute;
+    top: 20px;
+
+    height: 150px;
+    width: 150px;
+    z-index: 10;
+
+    background-color: black;
+}
+
 .word {
     display: flex;
     flex-direction: row;
@@ -145,16 +156,17 @@ body {
 
     height: 200px;
     width: 150px;
+    z-index: 20;
 
     background-size: contain;
     background-repeat: no-repeat;
     background-image: url('img/assets/word-panel.png');
 }
 
-.word span {
-    background-color: black;
+.word div {
     position: relative;
     top: -25px;
+    font-size: 1rem;
 }
 
 .previousHints {
